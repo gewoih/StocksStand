@@ -1,4 +1,5 @@
 ﻿using StocksStand.Models.Base;
+using System.Collections.ObjectModel;
 
 namespace StocksStand.Models
 {
@@ -23,6 +24,13 @@ namespace StocksStand.Models
 		{
 			get => _Symbol;
 			set => Set(ref _Symbol, value);
+		}
+
+		private ObservableCollection<Country> _Countries;
+		public ObservableCollection<Country> Countries
+		{
+			get => _Countries;
+			set => Set(ref _Countries, value);
 		}
 	}
 }

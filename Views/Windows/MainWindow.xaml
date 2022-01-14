@@ -4,12 +4,27 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:StocksStand"
+		xmlns:vm="clr-namespace:StocksStand.ViewModels"
         mc:Ignorable="d"
-        Title="StocksStand" Height="720" Width="1280">
+        Title="StocksStand" Height="720" Width="1280"
+		Background="SlateGray">
+	
+	<Window.DataContext>
+		<vm:MainViewModel/>
+	</Window.DataContext>
+	
     <Grid>
 		<Grid.ColumnDefinitions>
 			<ColumnDefinition Width="*"/>
 			<ColumnDefinition Width="3*"/>
 		</Grid.ColumnDefinitions>
+
+		<TreeView Grid.Column="0">
+			<TreeView.ItemTemplate>
+				<HierarchicalDataTemplate ItemsSource="{Binding Sectors}">
+					<TextBlock Text="{Binding Industry.Name}"/>
+				</HierarchicalDataTemplate>
+			</TreeView.ItemTemplate>
+		</TreeView>
     </Grid>
 </Window>
