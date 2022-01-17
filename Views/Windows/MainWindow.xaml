@@ -7,7 +7,8 @@
 		xmlns:vm="clr-namespace:StocksStand.ViewModels"
         mc:Ignorable="d"
         Title="StocksStand" Height="720" Width="1280"
-		Background="SlateGray">
+		Background="SlateGray"
+		FontSize="20">
 	
 	<Window.DataContext>
 		<vm:MainViewModel/>
@@ -19,12 +20,22 @@
 			<ColumnDefinition Width="3*"/>
 		</Grid.ColumnDefinitions>
 
-		<TreeView Grid.Column="0">
+		<TreeView ItemsSource="{Binding Sectors}">
 			<TreeView.ItemTemplate>
-				<HierarchicalDataTemplate ItemsSource="{Binding Sectors}">
-					<TextBlock Text="{Binding Industry.Name}"/>
+				<HierarchicalDataTemplate ItemsSource="{Binding Industries}">
+					<TextBlock Margin="3" Text="{Binding Name}"/>
+					<HierarchicalDataTemplate.ItemTemplate>
+						<HierarchicalDataTemplate ItemsSource="{Binding Stocks}">
+							<TextBlock Text="{Binding Name}"/>
+							<HierarchicalDataTemplate.ItemTemplate>
+								<DataTemplate>
+									<TextBlock Text="{Binding Ticker}"/>
+								</DataTemplate>
+							</HierarchicalDataTemplate.ItemTemplate>
+						</HierarchicalDataTemplate>
+					</HierarchicalDataTemplate.ItemTemplate>
 				</HierarchicalDataTemplate>
 			</TreeView.ItemTemplate>
 		</TreeView>
-    </Grid>
+	</Grid>
 </Window>
