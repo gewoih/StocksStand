@@ -11,6 +11,70 @@
 				<ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Primary/MaterialDesignColor.DeepPurple.xaml" />
 				<ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Accent/MaterialDesignColor.Lime.xaml" />
 			</ResourceDictionary.MergedDictionaries>
+
+			<!--Foreground colors -->
+			<SolidColorBrush x:Key="{x:Static SystemColors.ControlTextBrushKey}" Color="White"/>
+			<SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="#2196f3" />
+			<SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightTextBrushKey}" Color="White"/>
+			<SolidColorBrush x:Key="css_fg_default" Color="White"/>
+			<SolidColorBrush x:Key="css_fg_black" Color="Black"/>
+			<SolidColorBrush x:Key="css_fg_purple" Color="MediumPurple"/>
+			<SolidColorBrush x:Key="css_fg_dark_purple" Color="#7b04b5"/>
+			<SolidColorBrush x:Key="css_fg_pink" Color="#cc65ff"/>
+			<SolidColorBrush x:Key="css_fg_gray" Color="#9b9b9b"/>
+			<SolidColorBrush x:Key="css_fg_medium_gray" Color="#6d6d6d"/>
+			<SolidColorBrush x:Key="css_fg_orange" Color="#f2b47d"/>
+			<SolidColorBrush x:Key="css_fg_medium_orange" Color="#9d7653"/>
+			<SolidColorBrush x:Key="css_fg_green" Color="#aafdaa"/>
+			<SolidColorBrush x:Key="css_fg_red" Color="#ff7979"/>
+			<SolidColorBrush x:Key="css_fg_blue" Color="#1987df"/>
+			<SolidColorBrush x:Key="css_fg_blue_light" Color="#55b4ff"/>
+			<SolidColorBrush x:Key="css_fg_yellow" Color="#faff6f"/>
+			<SolidColorBrush x:Key="css_fg_cyan" Color="#00AFAF"/>
+			<SolidColorBrush x:Key="css_fg_cyan_light" Color="#3fffce"/>
+			<SolidColorBrush x:Key="css_fg_brown" Color="#7a4b2f"/>
+			<SolidColorBrush x:Key="css_fg_brown_light" Color="#cb8a63"/>
+			<SolidColorBrush x:Key="css_fg_gold" Color="#ceca61"/>
+			<SolidColorBrush x:Key="css_fg_gold_light" Color="#f0ec81"/>
+			<SolidColorBrush x:Key="css_fg_gray_blue_light" Color="#a3b9d9"/>
+			<SolidColorBrush x:Key="css_fg_gray_blue" Color="#7c91b1"/>
+
+			<!-- Background colors-->
+			<SolidColorBrush x:Key="{x:Static SystemColors.WindowBrushKey}" Color="Transparent" />
+			<SolidColorBrush x:Key="css_bg_default" Color="Black"/>
+			<SolidColorBrush x:Key="css_bg_white" Color="White"/>
+			<SolidColorBrush x:Key="css_bg_green" Color="#00391f"/>
+			<SolidColorBrush x:Key="css_bg_light_green" Color="Green"/>
+			<SolidColorBrush x:Key="css_bg_red" Color="#391400"/>
+			<SolidColorBrush x:Key="css_bg_light_red" Color="Red"/>
+			<SolidColorBrush x:Key="css_bg_orange" Color="#502600"/>
+			<SolidColorBrush x:Key="css_bg_gray" Color="#232323"/>
+			<SolidColorBrush x:Key="css_bg_blue" Color="#3374a7"/>
+			<SolidColorBrush x:Key="css_bg_dark_blue" Color="Blue"/>
+			<SolidColorBrush x:Key="css_bg_pink" Color="#922c79"/>
+			<SolidColorBrush x:Key="css_bg_cyan" Color="#005b5b"/>
+			<SolidColorBrush x:Key="css_bg_dark_purple" Color="#520378"/>
+			<SolidColorBrush x:Key="css_bg_brown" Color="#512f1a"/>
+			<SolidColorBrush x:Key="css_bg_gold" Color="#bbbb2b"/>
+
+			<!-- Colors for elems-->
+			<SolidColorBrush x:Key="css_annotation_bg" Color="Black"/>
+			<SolidColorBrush x:Key="css_groupbox_header_fg" Color="Wheat"/>
+			<SolidColorBrush x:Key="css_groupbox_border_color" Color="#2196f3"/>
+			<SolidColorBrush x:Key="css_candle_bg_bullish" Color="#00391f"/>
+			<SolidColorBrush x:Key="css_candle_bg_bearish" Color="#391400"/>
+			<SolidColorBrush x:Key="css_candle_fg_bullish" Color="White"/>
+			<SolidColorBrush x:Key="css_candle_fg_bearish" Color="White"/>
+
+			<!-- Colors -->
+			<SolidColorBrush x:Key="css_blue_color" Color="#2196f3"/>
+
+			<!-- Icon colors-->
+			<SolidColorBrush x:Key="css_icon_color_default" Color="#d7ac6a"/>
+			<SolidColorBrush x:Key="css_icon_color_base" Color="Black"/>
+
+			<!-- CheckBox -->
+			<SolidColorBrush x:Key="css_checkbox_bg" Color="#006aff" />
 		</ResourceDictionary>
 	</Application.Resources>
 </Application>

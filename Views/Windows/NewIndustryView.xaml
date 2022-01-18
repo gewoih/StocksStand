@@ -1,18 +1,17 @@
-﻿<Window x:Class="StocksStand.Views.Windows.NewSectorView"
+﻿<Window x:Class="StocksStand.Views.Windows.NewIndustryView"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:StocksStand.Views.Windows"
-		xmlns:vm="clr-namespace:StocksStand.ViewModels"
         mc:Ignorable="d"
-        Title="Создание нового сектора"
+        Title="Создание новой отрасли"
 		Height="250" Width="500"
 		FontSize="20"
 		WindowStartupLocation="CenterScreen"
 		Foreground="#A3B4D9"
 		Background="#192337">
-	
+
 	<Grid>
 		<Grid.RowDefinitions>
 			<RowDefinition Height="4*"/>
@@ -29,12 +28,12 @@
 					<ColumnDefinition/>
 				</Grid.ColumnDefinitions>
 
-				<TextBlock Grid.Row="0" Text="Название сектора: " VerticalAlignment="Center"/>
+				<TextBlock Grid.Row="1" Text="Название отрасли:" VerticalAlignment="Center"/>
 
-				<TextBox Grid.Row="0" Grid.Column="1" Text="{Binding NewSector.Name}"/>
+				<TextBox Grid.Row="1" Grid.Column="1" Text="{Binding NewIndustry.Name}"/>
 			</Grid>
 		</DockPanel>
 
-		<Button Grid.Row="1" Content="Создать сектор" Background="#020F2B" Command="{Binding AddSectorCommand}" Height="Auto"/>
+		<Button Grid.Row="1" Content="Создать сектор" Background="#020F2B" Command="{Binding AddIndustryCommand}" Height="Auto"/>
 	</Grid>
 </Window>
