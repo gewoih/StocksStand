@@ -26,7 +26,13 @@ namespace StocksStand.ViewModels
 			this.ShowNewIndustryWindowCommand = new RelayCommand(OnShowNewIndustryWindowCommandExecuted, CanShowNewIndustryWindowCommandExecute);
 			this.AddIndustryCommand = new RelayCommand(OnAddIndustryCommandExecuted, CanAddIndustryCommandExecute);
 
+			this.ShowNewStockWindowCommand = new RelayCommand(OnShowNewStockWindowCommandExecuted, CanShowNewStockWindowCommandExecute);
+			this.AddStockCommand = new RelayCommand(OnAddStockCommandExecuted, CanAddStockCommandExecute);
+
+			this.LoadQuotesForInstrumentCommand = new RelayCommand(OnLoadQuotesForInstrumentCommandExecuted, CanLoadQuotesForInstrumentCommandExecute);
+
 			this.Sectors = new ObservableCollection<Sector>(new SectorsRepository(new BaseDataContext()).GetAll());
+			this.Countries = new ObservableCollection<Country>(new CountriesRepository(new BaseDataContext()).GetAll());
 		}
 		#endregion
 
@@ -37,6 +43,13 @@ namespace StocksStand.ViewModels
 		{
 			get => _Sectors;
 			set => Set(ref _Sectors, value);
+		}
+
+		private ObservableCollection<Country> _Countries;
+		public ObservableCollection<Country> Countries
+		{
+			get => _Countries;
+			set => Set(ref _Countries, value);
 		}
 
 		//Выбранный Сектор
@@ -81,7 +94,7 @@ namespace StocksStand.ViewModels
 
 
 
-		//Объект нового Отрасли
+		//Объект новой Отрасли
 		private Industry _NewIndustry;
 		public Industry NewIndustry
 		{
@@ -95,6 +108,24 @@ namespace StocksStand.ViewModels
 		{
 			get => _NewIndustryView;
 			set => Set(ref _NewIndustryView, value);
+		}
+
+
+
+		//Объект нового Акции
+		private Stock _NewStock;
+		public Stock NewStock
+		{
+			get => _NewStock;
+			set => Set(ref _NewStock, value);
+		}
+
+		//Форма создания/редактирования Акции
+		private NewStockView _NewStockView;
+		public NewStockView NewStockView
+		{
+			get => _NewStockView;
+			set => Set(ref _NewStockView, value);
 		}
 		#endregion
 
@@ -131,7 +162,7 @@ namespace StocksStand.ViewModels
 		private void OnShowNewSectorWindowCommandExecuted(object p)
 		{
 			//Инициализируем новый Сектор
-			this.NewSector = new Sector();
+			this.NewSector = new Sector { Industries = new ObservableCollection<Industry>() };
 
 			//Инициализируем и вызываем форму для создания нового Сектора
 			this.NewSectorView = new NewSectorView(this);
@@ -172,7 +203,7 @@ namespace StocksStand.ViewModels
 		private void OnShowNewIndustryWindowCommandExecuted(object p)
 		{
 			//Инициализируем новую Отрасль
-			this.NewIndustry = new Industry();
+			this.NewIndustry = new Industry { Stocks = new ObservableCollection<Stock>(), Sector = this.SelectedSector };
 
 			//Инициализируем и вызываем форму для создания новой Отрасли
 			this.NewIndustryView = new NewIndustryView(this);
@@ -203,6 +234,67 @@ namespace StocksStand.ViewModels
 			}
 			else
 				MessageBox.Show("Заполните название отрасли!");
+		}
+
+
+
+		//Отображение окна для добавления новой Акции
+		public ICommand ShowNewStockWindowCommand { get; }
+		private bool CanShowNewStockWindowCommandExecute(object p) => this.SelectedIndustry != null;
+		private void OnShowNewStockWindowCommandExecuted(object p)
+		{
+			//Инициализируем новую Акцию
+			this.NewStock = new Stock { Industry = this.SelectedIndustry, Quotes = new ObservableCollection<Quote>() };
+
+			//Инициализируем и вызываем форму для создания новой Акции
+			this.NewStockView = new NewStockView(this);
+			this.NewStockView.ShowDialog();
+		}
+
+		//Добавление новой Акции
+		public ICommand AddStockCommand { get; }
+		private bool CanAddStockCommandExecute(object p) => true;
+		private void OnAddStockCommandExecuted(object p)
+		{
+			//Пустое ли имя Акции?
+			if (!String.IsNullOrEmpty(this.NewStock.Name))
+			{
+				if (!String.IsNullOrEmpty(this.NewStock.Ticker))
+				{
+					if (this.NewStock.Country != null)
+					{
+						StocksRepository StocksRepository = new StocksRepository(new BaseDataContext());
+						//Проверяем есть ли в базе Акция с таким тикером (без учета регистра)
+						if (StocksRepository.GetAll().FirstOrDefault(c => c.Ticker.ToLower() == this.NewStock.Ticker.ToLower()) == null)
+						{
+							//Если такая Акция не найдена - создаем новую и добавляем ее к выбранной Отрасли
+							this.SelectedIndustry.Stocks.Add(StocksRepository.Create(this.NewStock));
+
+							//Закрываем форму создания Акции
+							this.NewStockView.Close();
+							MessageBox.Show($"Бумага '{this.NewStock.Name}'[{this.NewStock.Ticker}] успешно добавлена.");
+						}
+						else
+							MessageBox.Show("Бумага с таким тикером уже существует.");
+					}
+					else
+						MessageBox.Show("Выберите страну!");
+				}
+				else
+					MessageBox.Show("Введите тикер бумаги");
+			}
+			else
+				MessageBox.Show("Введите наименование бумаги!");
+		}
+
+
+
+		//Загрузка котировок выбранному Финансовому Инструменту
+		public ICommand LoadQuotesForInstrumentCommand { get; }
+		private bool CanLoadQuotesForInstrumentCommandExecute(object p) => this.SelectedFinancialInstrument != null;
+		private void OnLoadQuotesForInstrumentCommandExecuted(object p)
+		{
+			this.SelectedFinancialInstrument.LoadQuotesNasdaq();
 		}
 		#endregion
 	}

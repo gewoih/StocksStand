@@ -16,7 +16,7 @@ namespace StocksStand.DataContext
 
 		public BaseDataContext() : base()
 		{
-			Database.EnsureDeleted();
+			/*Database.EnsureDeleted();
 			Database.EnsureCreated();
 
 			var s1 = new Sector { Name = "Технологии" };
@@ -40,7 +40,7 @@ namespace StocksStand.DataContext
 			var st4 = new Stock { Country = co1, Industry = i3, Name = "Microsoft", Ticker = "MSFT" };
 			Stocks.AddRange(st1, st2, st3, st4);
 
-			this.SaveChanges();
+			this.SaveChanges();*/
 		}
 
 		public BaseDataContext(DbContextOptions options) : base(options)

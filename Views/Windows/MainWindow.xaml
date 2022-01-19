@@ -28,7 +28,8 @@
 					<MenuItem Header="Создать новый сектор" Command="{Binding ShowNewSectorWindowCommand}"/>
 					<MenuItem Header="Создать новую отрасль" Command="{Binding ShowNewIndustryWindowCommand}"/>
 					<Separator/>
-					<MenuItem Header="Добавить инструмент"/>
+					<MenuItem Header="Добавить инструмент" Command="{Binding ShowNewStockWindowCommand}"/>
+					<MenuItem Header="Загрузить котировки" Command="{Binding LoadQuotesForInstrumentCommand}"/>
 				</ContextMenu>
 			</TreeView.ContextMenu>
 

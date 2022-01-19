@@ -6,11 +6,11 @@ using System.Linq;
 
 namespace StocksStand.Repositories
 {
-	public class IndustriesRepository : BaseRepository<Industry>
+	public class StocksRepository : BaseRepository<Stock>
 	{
-		public IndustriesRepository(BaseDataContext dbContext) : base(dbContext) { }
+		public StocksRepository(BaseDataContext dbContext) : base(dbContext) { }
 
-		public override IQueryable<Industry> GetAll()
+		public override IQueryable<Stock> GetAll()
 		{
 			return base.GetAll();
 		}
