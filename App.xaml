@@ -2,6 +2,8 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:StocksStand"
+			 xmlns:vm="clr-namespace:StocksStand.ViewModels"
+			 xmlns:view="clr-namespace:StocksStand.Views"
              StartupUri="Views/Windows/MainWindow.xaml">
     <Application.Resources>
 		<ResourceDictionary>
@@ -11,6 +13,10 @@
 				<ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Primary/MaterialDesignColor.DeepPurple.xaml" />
 				<ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Accent/MaterialDesignColor.Lime.xaml" />
 			</ResourceDictionary.MergedDictionaries>
+
+			<DataTemplate DataType="{x:Type vm:ChartViewModel}">
+				<view:ChartView/>
+			</DataTemplate>
 
 			<!--Foreground colors -->
 			<SolidColorBrush x:Key="{x:Static SystemColors.ControlTextBrushKey}" Color="White"/>

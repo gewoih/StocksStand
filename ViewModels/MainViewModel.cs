@@ -4,11 +4,14 @@ using StocksStand.Models;
 using StocksStand.Models.Abstractions;
 using StocksStand.Repositories;
 using StocksStand.ViewModels.Base;
+using StocksStand.Views;
 using StocksStand.Views.Windows;
 using System;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace StocksStand.ViewModels
@@ -31,12 +34,23 @@ namespace StocksStand.ViewModels
 
 			this.LoadQuotesForInstrumentCommand = new RelayCommand(OnLoadQuotesForInstrumentCommandExecuted, CanLoadQuotesForInstrumentCommandExecute);
 
+			this.ShowInstrumentQuotesCommand = new RelayCommand(OnShowInstrumentQuotesCommandExecuted, CanShowInstrumentQuotesCommandExecute);
+
 			this.Sectors = new ObservableCollection<Sector>(new SectorsRepository(new BaseDataContext()).GetAll());
 			this.Countries = new ObservableCollection<Country>(new CountriesRepository(new BaseDataContext()).GetAll());
+			this.FinancialControls = new ObservableCollection<BaseViewModel>();
 		}
 		#endregion
 
 		#region Properties
+		//Коллекция окон для работы с Финансовыми Инструментами (графики, фин. показатели, индикаторы и т.д.)
+		private ObservableCollection<BaseViewModel> _FinancialControls;
+		public ObservableCollection<BaseViewModel> FinancialControls
+		{
+			get => _FinancialControls;
+			set => Set(ref _FinancialControls, value);
+		}
+
 		//Список всех Секторов
 		private ObservableCollection<Sector> _Sectors;
 		public ObservableCollection<Sector> Sectors
@@ -289,12 +303,28 @@ namespace StocksStand.ViewModels
 
 
 
-		//Загрузка котировок выбранному Финансовому Инструменту
+		//Загрузка котировок по выбранному Финансовому Инструменту
 		public ICommand LoadQuotesForInstrumentCommand { get; }
 		private bool CanLoadQuotesForInstrumentCommandExecute(object p) => this.SelectedFinancialInstrument != null;
 		private void OnLoadQuotesForInstrumentCommandExecuted(object p)
 		{
-			this.SelectedFinancialInstrument.LoadQuotesNasdaq();
+			Stopwatch stopwatch = new Stopwatch();
+
+			stopwatch.Start();
+			int loadedQuotes = this.SelectedFinancialInstrument.LoadQuotes();
+			stopwatch.Stop();
+
+			MessageBox.Show($"Было загружено {loadedQuotes} котировок за {stopwatch.ElapsedMilliseconds / 1000} секунд.");
+		}
+
+
+
+		//Добавление Финансового Инструмента в рабочую область
+		public ICommand ShowInstrumentQuotesCommand { get; }
+		private bool CanShowInstrumentQuotesCommandExecute(object p) => this.SelectedFinancialInstrument != null;
+		private void OnShowInstrumentQuotesCommandExecuted(object p)
+		{
+			this.FinancialControls.Add(new ChartViewModel(this.SelectedFinancialInstrument));
 		}
 		#endregion
 	}

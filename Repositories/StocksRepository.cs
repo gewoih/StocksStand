@@ -12,7 +12,7 @@ namespace StocksStand.Repositories
 
 		public override IQueryable<Stock> GetAll()
 		{
-			return base.GetAll();
+			return base.GetAll().Include(s => s.Quotes);
 		}
 	}
 }

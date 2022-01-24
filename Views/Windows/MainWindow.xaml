@@ -30,6 +30,8 @@
 					<Separator/>
 					<MenuItem Header="Добавить инструмент" Command="{Binding ShowNewStockWindowCommand}"/>
 					<MenuItem Header="Загрузить котировки" Command="{Binding LoadQuotesForInstrumentCommand}"/>
+					<Separator/>
+					<MenuItem Header="Добавить в рабочую область" Command="{Binding ShowInstrumentQuotesCommand}"/>
 				</ContextMenu>
 			</TreeView.ContextMenu>
 
@@ -55,5 +57,9 @@
 				</HierarchicalDataTemplate>
 			</TreeView.ItemTemplate>
 		</TreeView>
+
+		<ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto">
+			<ItemsControl ItemsSource="{Binding FinancialControls}"/>
+		</ScrollViewer>
 	</Grid>
 </Window>

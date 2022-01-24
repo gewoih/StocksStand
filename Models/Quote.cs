@@ -20,36 +20,36 @@ namespace StocksStand.Models
 			set => Set(ref _Date, value);
 		}
 
-		private decimal _OpenPrice;
-		public decimal OpenPrice
+		private double _OpenPrice;
+		public double OpenPrice
 		{
 			get => _OpenPrice;
 			set => Set(ref _OpenPrice, value);
 		}
 
-		private decimal _HighPrice;
-		public decimal HighPrice
+		private double _HighPrice;
+		public double HighPrice
 		{
 			get => _HighPrice;
 			set => Set(ref _HighPrice, value);
 		}
 
-		private decimal _LowPrice;
-		public decimal LowPrice
+		private double _LowPrice;
+		public double LowPrice
 		{
 			get => _LowPrice;
 			set => Set(ref _LowPrice, value);
 		}
 
-		private decimal _ClosePrice;
-		public decimal ClosePrice
+		private double _ClosePrice;
+		public double ClosePrice
 		{
 			get => _ClosePrice;
 			set => Set(ref _ClosePrice, value);
 		}
 
-		private decimal _Volume;
-		public decimal Volume
+		private double _Volume;
+		public double Volume
 		{
 			get => _Volume;
 			set => Set(ref _Volume, value);

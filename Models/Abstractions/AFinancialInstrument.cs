@@ -1,12 +1,18 @@
-﻿using StocksStand.Models.Base;
+﻿using Newtonsoft.Json;
+using StocksStand.DataContext;
+using StocksStand.Models.Base;
+using StocksStand.Repositories;
+using System;
 using System.Collections.ObjectModel;
 using System.Configuration;
 using System.Net;
+using System.Windows;
 
 namespace StocksStand.Models.Abstractions
 {
 	public abstract class AFinancialInstrument : Entity
 	{
+		#region Properties
 		private string _Name;
 		public string Name
 		{
@@ -34,13 +40,10 @@ namespace StocksStand.Models.Abstractions
 			get => _Quotes;
 			set => Set(ref _Quotes, value);
 		}
+		#endregion
 
-		public int LoadQuotesNasdaq()
-		{
-			WebClient client = new WebClient();
-
-			string result = client.DownloadString($"https://data.nasdaq.com/api/v3/datasets/WIKI/{this.Ticker}/data.json?api_key={ConfigurationManager.AppSettings["NasdaqApi"]}");
-			return 1;
-		}
+		#region Methods
+		public abstract int LoadQuotes();
+		#endregion
 	}
 }

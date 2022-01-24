@@ -12,7 +12,7 @@ namespace StocksStand.Repositories
 
 		public override IQueryable<Sector> GetAll()
 		{
-			return base.GetAll().Include(s => s.Industries).ThenInclude(i => i.Stocks);
+			return base.GetAll().Include(s => s.Industries).ThenInclude(i => i.Stocks).ThenInclude(s => s.Quotes.OrderBy(q => q.Date));
 		}
 	}
 }
