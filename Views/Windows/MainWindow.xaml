@@ -9,7 +9,7 @@
 		mc:Ignorable="d"
 		Title="StocksStand" Height="720" Width="1280"
 		Background="#192337"
-		FontSize="20"
+		FontSize="18"
 		WindowStartupLocation="CenterScreen">
 	
 	<Window.DataContext>
@@ -32,6 +32,7 @@
 					<MenuItem Header="Загрузить котировки" Command="{Binding LoadQuotesForInstrumentCommand}"/>
 					<Separator/>
 					<MenuItem Header="Добавить в рабочую область" Command="{Binding ShowInstrumentQuotesCommand}"/>
+					<MenuItem Header="Удалить из рабочей области" Command="{Binding HideInstrumentQuotesCommand}"/>
 				</ContextMenu>
 			</TreeView.ContextMenu>
 
@@ -58,8 +59,6 @@
 			</TreeView.ItemTemplate>
 		</TreeView>
 
-		<ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto">
-			<ItemsControl ItemsSource="{Binding FinancialControls}"/>
-		</ScrollViewer>
+		<UserControl Grid.Column="1" Content="{Binding ChartViewModel}"/>
 	</Grid>
 </Window>

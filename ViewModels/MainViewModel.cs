@@ -35,20 +35,21 @@ namespace StocksStand.ViewModels
 			this.LoadQuotesForInstrumentCommand = new RelayCommand(OnLoadQuotesForInstrumentCommandExecuted, CanLoadQuotesForInstrumentCommandExecute);
 
 			this.ShowInstrumentQuotesCommand = new RelayCommand(OnShowInstrumentQuotesCommandExecuted, CanShowInstrumentQuotesCommandExecute);
+			this.HideInstrumentQuotesCommand = new RelayCommand(OnHideInstrumentQuotesCommandExecuted, CanHideInstrumentQuotesCommandExecute);
 
 			this.Sectors = new ObservableCollection<Sector>(new SectorsRepository(new BaseDataContext()).GetAll());
 			this.Countries = new ObservableCollection<Country>(new CountriesRepository(new BaseDataContext()).GetAll());
-			this.FinancialControls = new ObservableCollection<BaseViewModel>();
+			this.ChartViewModel = new ChartViewModel();
 		}
 		#endregion
 
 		#region Properties
 		//Коллекция окон для работы с Финансовыми Инструментами (графики, фин. показатели, индикаторы и т.д.)
-		private ObservableCollection<BaseViewModel> _FinancialControls;
-		public ObservableCollection<BaseViewModel> FinancialControls
+		private ChartViewModel _ChartViewModel;
+		public ChartViewModel ChartViewModel
 		{
-			get => _FinancialControls;
-			set => Set(ref _FinancialControls, value);
+			get => _ChartViewModel;
+			set => Set(ref _ChartViewModel, value);
 		}
 
 		//Список всех Секторов
@@ -324,7 +325,14 @@ namespace StocksStand.ViewModels
 		private bool CanShowInstrumentQuotesCommandExecute(object p) => this.SelectedFinancialInstrument != null;
 		private void OnShowInstrumentQuotesCommandExecuted(object p)
 		{
-			this.FinancialControls.Add(new ChartViewModel(this.SelectedFinancialInstrument));
+			this.ChartViewModel.AddFinancialInstrument(this.SelectedFinancialInstrument);
+		}
+
+		public ICommand HideInstrumentQuotesCommand { get; }
+		private bool CanHideInstrumentQuotesCommandExecute(object p) => this.SelectedFinancialInstrument != null;
+		private void OnHideInstrumentQuotesCommandExecuted(object p)
+		{
+			this.ChartViewModel.RemoveFinancialInstrument(this.SelectedFinancialInstrument);
 		}
 		#endregion
 	}

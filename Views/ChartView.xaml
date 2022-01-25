@@ -7,27 +7,11 @@
 			 xmlns:s="http://schemas.abtsoftware.co.uk/scichart"
 			 xmlns:ex="http://schemas.abtsoftware.co.uk/scichart/exampleExternals"
 			 xmlns:vm="clr-namespace:StocksStand.ViewModels"
-			 mc:Ignorable="d"
-			 Height="340">
+			 mc:Ignorable="d">
 
 	<Grid>
-		<s:SciChartSurface x:Name="SciChart" RenderableSeries="{s:SeriesBinding RenderableSeries}" 
-                           ChartTitle="{Binding FinancialInstrument.Name}">
-
-			<s:SciChartSurface.ChartModifier>
-				<s:ModifierGroup>
-					<s:ZoomPanModifier XyDirection="XyDirection" ClipModeX="None"
-                               ZoomExtentsY="False"/>
-				</s:ModifierGroup>
-			</s:SciChartSurface.ChartModifier>
-
-			<s:SciChartSurface.XAxis>
-				<s:CategoryDateTimeAxis AxisTitle="Дата"/>
-			</s:SciChartSurface.XAxis>
-			<s:SciChartSurface.YAxis>
-				<s:NumericAxis AxisTitle="Стоимость"/>
-			</s:SciChartSurface.YAxis>
-		</s:SciChartSurface>
-		
+		<ScrollViewer VerticalScrollBarVisibility="Auto">
+			<ItemsControl ItemsSource="{Binding FinancialInstruments}" DisplayMemberPath="Item2"/>
+		</ScrollViewer>
 	</Grid>
 </UserControl>
