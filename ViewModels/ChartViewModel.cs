@@ -14,6 +14,8 @@ using SciChart.Charting.ChartModifiers;
 using SciChart.Charting;
 using System.Linq;
 using System.Windows;
+using System.Windows.Data;
+using System.Windows.Controls;
 
 namespace StocksStand.ViewModels
 {
@@ -71,7 +73,7 @@ namespace StocksStand.ViewModels
 				new SciChartSurface
 				{
 					Background = new SolidColorBrush(Color.FromRgb(22, 26, 37)),
-					Height = 500,
+					Height = 340,
 					ChartTitle = financialInstrument.Name,
 					XAxis = new CategoryDateTimeAxis() { AxisTitle = "Дата", TextFormatting = "dd MMM yyyy", DrawMinorGridLines = false },
 					YAxis = new NumericAxis() { AxisTitle = "Стоимость", TextFormatting = "#.00", DrawMinorGridLines = false, AutoRange = AutoRange.Always },
@@ -79,12 +81,21 @@ namespace StocksStand.ViewModels
 
 					ChartModifier = new ModifierGroup
 										(
-											new ZoomPanModifier() { ClipModeX = ClipMode.None, ZoomExtentsY = false, XyDirection = XyDirection.XDirection },
-											new MouseWheelZoomModifier() { ExecuteOn = ExecuteOn.MouseDoubleClick, XyDirection = XyDirection.XDirection },
-											new ZoomExtentsModifier(),
-											new CursorModifier() { ShowAxisLabels = true, ShowTooltip = true, ShowTooltipOn = ShowTooltipOptions.MouseHover, TooltipUsageMode = TooltipUsageMode.Popup }
-										)
+											new ZoomPanModifier() { ClipModeX = ClipMode.None, ZoomExtentsY = false, XyDirection = XyDirection.XDirection, ReceiveHandledEvents = true },
+											new MouseWheelZoomModifier() { ExecuteOn = ExecuteOn.MouseDoubleClick, XyDirection = XyDirection.XDirection, ReceiveHandledEvents = true },
+											new ZoomExtentsModifier() { ReceiveHandledEvents = true },
+											new CursorModifier() { ShowAxisLabels = true, ShowTooltip = true, ShowTooltipOn = ShowTooltipOptions.Always, ReceiveHandledEvents = true }
+										) { MouseEventGroup = "MainGroup" }
 				});
+
+			if (this.FinancialInstruments.Count > 1)
+			{
+				Binding visibleRangeBinding = new Binding("VisibleRange");
+				visibleRangeBinding.Source = this.FinancialInstruments[0].XAxis;
+				visibleRangeBinding.Mode = BindingMode.TwoWay;
+
+				BindingOperations.SetBinding((DependencyObject)this.FinancialInstruments.Last().XAxis, AxisBase.VisibleRangeProperty, visibleRangeBinding);
+			}
 		}
 
 		public void RemoveFinancialInstrument(AFinancialInstrument financialInstrument)
