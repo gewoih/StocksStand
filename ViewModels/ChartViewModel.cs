@@ -16,6 +16,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Controls;
+using SciChart.Charting.Visuals.TradeChart;
 
 namespace StocksStand.ViewModels
 {
@@ -25,6 +26,8 @@ namespace StocksStand.ViewModels
 		public ChartViewModel()
 		{
 			this.FinancialInstruments = new ObservableCollection<SciChartSurface>();
+
+			this.SharedXRange = new IndexRange();
 		}
 		#endregion
 
@@ -35,6 +38,13 @@ namespace StocksStand.ViewModels
 		{
 			get => _FinancialInstruments;
 			set => Set(ref _FinancialInstruments, value);
+		}
+
+		private IRange _SharedXRange;
+		public IRange SharedXRange
+		{
+			get => _SharedXRange;
+			set => Set(ref _SharedXRange, value);
 		}
 		#endregion
 
@@ -55,7 +65,7 @@ namespace StocksStand.ViewModels
 				BorderThickness = new Thickness(0, 0, 0, 0)
 			};
 
-			IDataSeries<DateTime, double> ohlcDataSeries = new OhlcDataSeries<DateTime, double>();
+			var ohlcDataSeries = new OhlcDataSeries<DateTime, double>();
 			foreach (var quote in financialInstrument.Quotes)
 			{
 				ohlcDataSeries.Append
@@ -70,32 +80,31 @@ namespace StocksStand.ViewModels
 			candlestickRenderableSeries.DataSeries = ohlcDataSeries;
 
 			this.FinancialInstruments.Add(
-				new SciChartSurface
+				new SciChartSurface()
 				{
 					Background = new SolidColorBrush(Color.FromRgb(22, 26, 37)),
 					Height = 340,
 					ChartTitle = financialInstrument.Name,
-					XAxis = new CategoryDateTimeAxis() { AxisTitle = "Дата", TextFormatting = "dd MMM yyyy", DrawMinorGridLines = false },
-					YAxis = new NumericAxis() { AxisTitle = "Стоимость", TextFormatting = "#.00", DrawMinorGridLines = false, AutoRange = AutoRange.Always },
+					FontSize = 14,
+					XAxis = new CategoryDateTimeAxis() { TextFormatting = "dd MMM yyyy", DrawMinorGridLines = false },
+					YAxis = new NumericAxis() { TextFormatting = "#.00", DrawMinorGridLines = false, AutoRange = AutoRange.Always },
 					RenderableSeries = new ObservableCollection<IRenderableSeries> { candlestickRenderableSeries },
 
 					ChartModifier = new ModifierGroup
-										(
-											new ZoomPanModifier() { ClipModeX = ClipMode.None, ZoomExtentsY = false, XyDirection = XyDirection.XDirection, ReceiveHandledEvents = true },
-											new MouseWheelZoomModifier() { ExecuteOn = ExecuteOn.MouseDoubleClick, XyDirection = XyDirection.XDirection, ReceiveHandledEvents = true },
-											new ZoomExtentsModifier() { ReceiveHandledEvents = true },
-											new CursorModifier() { ShowAxisLabels = true, ShowTooltip = true, ShowTooltipOn = ShowTooltipOptions.Always, ReceiveHandledEvents = true }
-										) { MouseEventGroup = "MainGroup" }
+									(
+										new ZoomPanModifier() { ClipModeX = ClipMode.ClipAtExtents, ZoomExtentsY = false, XyDirection = XyDirection.XDirection, ReceiveHandledEvents = true },
+										new MouseWheelZoomModifier() { ExecuteOn = ExecuteOn.MouseDoubleClick, XyDirection = XyDirection.XDirection, ReceiveHandledEvents = true },
+										new ZoomExtentsModifier() { ReceiveHandledEvents = true },
+										new CursorModifier() { ReceiveHandledEvents = true },
+										new RolloverModifier() { ShowAxisLabels = true, IsEnabled = true, DrawVerticalLine = true, SourceMode = SourceMode.AllVisibleSeries, ShowTooltipOn = ShowTooltipOptions.Always, ReceiveHandledEvents = true }
+									) { MouseEventGroup = "MainGroup" }
 				});
 
-			if (this.FinancialInstruments.Count > 1)
-			{
-				Binding visibleRangeBinding = new Binding("VisibleRange");
-				visibleRangeBinding.Source = this.FinancialInstruments[0].XAxis;
+				Binding visibleRangeBinding = new Binding("SharedXRange");
+				visibleRangeBinding.Source = this;
 				visibleRangeBinding.Mode = BindingMode.TwoWay;
 
 				BindingOperations.SetBinding((DependencyObject)this.FinancialInstruments.Last().XAxis, AxisBase.VisibleRangeProperty, visibleRangeBinding);
-			}
 		}
 
 		public void RemoveFinancialInstrument(AFinancialInstrument financialInstrument)
