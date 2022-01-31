@@ -37,7 +37,6 @@ namespace StocksStand.ViewModels
 			this.ShowInstrumentQuotesCommand = new RelayCommand(OnShowInstrumentQuotesCommandExecuted, CanShowInstrumentQuotesCommandExecute);
 			this.HideInstrumentQuotesCommand = new RelayCommand(OnHideInstrumentQuotesCommandExecuted, CanHideInstrumentQuotesCommandExecute);
 
-			this.Sectors = new ObservableCollection<Sector>(new SectorsRepository(new BaseDataContext()).GetAll());
 			this.Countries = new ObservableCollection<Country>(new CountriesRepository(new BaseDataContext()).GetAll());
 			this.ChartViewModel = new ChartViewModel();
 		}
@@ -53,13 +52,6 @@ namespace StocksStand.ViewModels
 		}
 
 		//Список всех Секторов
-		private ObservableCollection<Sector> _Sectors;
-		public ObservableCollection<Sector> Sectors
-		{
-			get => _Sectors;
-			set => Set(ref _Sectors, value);
-		}
-
 		private ObservableCollection<Country> _Countries;
 		public ObservableCollection<Country> Countries
 		{
@@ -68,28 +60,14 @@ namespace StocksStand.ViewModels
 		}
 
 		//Выбранный Сектор
-		private Sector _SelectedSector;
-		public Sector SelectedSector
+		private object _SelectedMenuItem;
+		public object SelectedMenuItem
 		{
-			get => _SelectedSector;
-			set => Set(ref _SelectedSector, value);
+			get => _SelectedMenuItem;
+			set => Set(ref _SelectedMenuItem, value);
 		}
 
-		//Выбранная Отрасль
-		private Industry _SelectedIndustry;
-		public Industry SelectedIndustry
-		{
-			get => _SelectedIndustry;
-			set => Set(ref _SelectedIndustry, value);
-		}
 
-		//Выбранный Финансовый Инструмент
-		private AFinancialInstrument _SelectedFinancialInstrument;
-		public AFinancialInstrument SelectedFinancialInstrument
-		{
-			get => _SelectedFinancialInstrument;
-			set => Set(ref _SelectedFinancialInstrument, value);
-		}
 
 		//Объект нового Сектора
 		private Sector _NewSector;
@@ -151,29 +129,19 @@ namespace StocksStand.ViewModels
 		private void OnChangeSelectedItemCommandExecuted(object p)
 		{
 			//Проверка выбранного элемента TreeView
-			if (p is Sector sector)
-			{
-				this.SelectedSector = sector;
-				this.SelectedIndustry = null;
-				this.SelectedFinancialInstrument = null;
-			}
+			if (p is Country country)
+				this.SelectedMenuItem = country;
+			else if (p is Sector sector)
+				this.SelectedMenuItem = sector;
 			else if (p is Industry industry)
-			{
-				this.SelectedIndustry = industry;
-				this.SelectedSector = this.SelectedIndustry.Sector;
-				this.SelectedFinancialInstrument = null;
-			}
+				this.SelectedMenuItem = industry;
 			else if (p is Stock stock)
-			{
-				this.SelectedFinancialInstrument = stock;
-				this.SelectedIndustry = stock.Industry;
-				this.SelectedSector = stock.Industry.Sector;
-			}
+				this.SelectedMenuItem = stock;
 		}
 
 		//Отображение окна для добавления нового Сектора
 		public ICommand ShowNewSectorWindowCommand { get; }
-		private bool CanShowNewSectorWindowCommandExecute(object p) => true;
+		private bool CanShowNewSectorWindowCommandExecute(object p) => this.SelectedMenuItem is Country;
 		private void OnShowNewSectorWindowCommandExecuted(object p)
 		{
 			//Инициализируем новый Сектор
@@ -186,7 +154,7 @@ namespace StocksStand.ViewModels
 
 		//Добавление нового Сектора
 		public ICommand AddSectorCommand { get; }
-		private bool CanAddSectorCommandExecute(object p) => true;
+		private bool CanAddSectorCommandExecute(object p) => this.SelectedMenuItem is Country;
 		private void OnAddSectorCommandExecuted(object p)
 		{
 			//Пустое ли имя сектора?
@@ -197,7 +165,7 @@ namespace StocksStand.ViewModels
 				if (SectorsRepository.GetAll().FirstOrDefault(c => c.Name.ToLower() == this.NewSector.Name.ToLower()) == null)
 				{
 					//Если такой сектор не найден - создаем новый
-					this.Sectors.Add(SectorsRepository.Create(this.NewSector));
+					((Country)this.SelectedMenuItem).Sectors.Add(SectorsRepository.Create(this.NewSector));
 
 					//Закрываем форму создания сектора
 					this.NewSectorView.Close();
@@ -214,11 +182,11 @@ namespace StocksStand.ViewModels
 
 		//Отображение окна для добавления новой Отрасли
 		public ICommand ShowNewIndustryWindowCommand { get; }
-		private bool CanShowNewIndustryWindowCommandExecute(object p) => this.SelectedSector != null;
+		private bool CanShowNewIndustryWindowCommandExecute(object p) => this.SelectedMenuItem is Sector;
 		private void OnShowNewIndustryWindowCommandExecuted(object p)
 		{
 			//Инициализируем новую Отрасль
-			this.NewIndustry = new Industry { Stocks = new ObservableCollection<Stock>(), Sector = this.SelectedSector };
+			this.NewIndustry = new Industry { FinancialInstruments = new ObservableCollection<AFinancialInstrument>(), Sector = (Sector)this.SelectedMenuItem };
 
 			//Инициализируем и вызываем форму для создания новой Отрасли
 			this.NewIndustryView = new NewIndustryView(this);
@@ -227,7 +195,7 @@ namespace StocksStand.ViewModels
 
 		//Добавление новой Отрасли
 		public ICommand AddIndustryCommand { get; }
-		private bool CanAddIndustryCommandExecute(object p) => true;
+		private bool CanAddIndustryCommandExecute(object p) => this.SelectedMenuItem is Sector;
 		private void OnAddIndustryCommandExecuted(object p)
 		{
 			//Пустое ли имя Отрасли?
@@ -238,7 +206,7 @@ namespace StocksStand.ViewModels
 				if (IndustriesRepository.GetAll().FirstOrDefault(c => c.Name.ToLower() == this.NewIndustry.Name.ToLower()) == null)
 				{
 					//Если такая Отрасль не найдена - создаем новую и добавляем ее к выбранному Сектору
-					this.SelectedSector.Industries.Add(IndustriesRepository.Create(this.NewIndustry));
+					((Sector)this.SelectedMenuItem).Industries.Add(IndustriesRepository.Create(this.NewIndustry));
 
 					//Закрываем форму создания Отрасли
 					this.NewIndustryView.Close();
@@ -255,11 +223,11 @@ namespace StocksStand.ViewModels
 
 		//Отображение окна для добавления новой Акции
 		public ICommand ShowNewStockWindowCommand { get; }
-		private bool CanShowNewStockWindowCommandExecute(object p) => this.SelectedIndustry != null;
+		private bool CanShowNewStockWindowCommandExecute(object p) => this.SelectedMenuItem is Industry;
 		private void OnShowNewStockWindowCommandExecuted(object p)
 		{
 			//Инициализируем новую Акцию
-			this.NewStock = new Stock { Industry = this.SelectedIndustry, Quotes = new ObservableCollection<Quote>() };
+			this.NewStock = new Stock { Industry = (Industry)this.SelectedMenuItem, Quotes = new ObservableCollection<Quote>() };
 
 			//Инициализируем и вызываем форму для создания новой Акции
 			this.NewStockView = new NewStockView(this);
@@ -268,51 +236,52 @@ namespace StocksStand.ViewModels
 
 		//Добавление новой Акции
 		public ICommand AddStockCommand { get; }
-		private bool CanAddStockCommandExecute(object p) => true;
+		private bool CanAddStockCommandExecute(object p) => this.SelectedMenuItem is Industry;
 		private void OnAddStockCommandExecuted(object p)
 		{
 			//Пустое ли имя Акции?
-			if (!String.IsNullOrEmpty(this.NewStock.Name))
+			if (!String.IsNullOrEmpty(this.NewStock.Ticker))
 			{
-				if (!String.IsNullOrEmpty(this.NewStock.Ticker))
+				StocksRepository StocksRepository = new StocksRepository(new BaseDataContext());
+				//Проверяем есть ли в базе Акция с таким тикером (без учета регистра)
+				if (StocksRepository.GetAll().FirstOrDefault(c => c.Ticker.ToLower() == this.NewStock.Ticker.ToLower()) == null)
 				{
-					if (this.NewStock.Country != null)
+					//Загружаем необходимые параметры инструмента по введенному тикеру
+					try
 					{
-						StocksRepository StocksRepository = new StocksRepository(new BaseDataContext());
-						//Проверяем есть ли в базе Акция с таким тикером (без учета регистра)
-						if (StocksRepository.GetAll().FirstOrDefault(c => c.Ticker.ToLower() == this.NewStock.Ticker.ToLower()) == null)
-						{
-							//Если такая Акция не найдена - создаем новую и добавляем ее к выбранной Отрасли
-							this.SelectedIndustry.Stocks.Add(StocksRepository.Create(this.NewStock));
-
-							//Закрываем форму создания Акции
-							this.NewStockView.Close();
-							MessageBox.Show($"Бумага '{this.NewStock.Name}'[{this.NewStock.Ticker}] успешно добавлена.");
-						}
-						else
-							MessageBox.Show("Бумага с таким тикером уже существует.");
+						this.NewStock.LoadParamsByTicker();
 					}
-					else
-						MessageBox.Show("Выберите страну!");
+					catch(Exception e)
+					{
+						MessageBox.Show(e.Message);
+						return;
+					}
+					
+					//Создаем инструмент с установленными параметрами
+					((Industry)this.SelectedMenuItem).FinancialInstruments.Add(StocksRepository.Create(this.NewStock));
+
+					//Закрываем форму создания Акции
+					this.NewStockView.Close();
+					MessageBox.Show($"Бумага '{this.NewStock.Name}'[{this.NewStock.Ticker}] успешно добавлена.");
 				}
 				else
-					MessageBox.Show("Введите тикер бумаги");
+					MessageBox.Show("Бумага с таким тикером уже существует.");
 			}
 			else
-				MessageBox.Show("Введите наименование бумаги!");
+				MessageBox.Show("Введите тикер бумаги");
 		}
 
 
 
 		//Загрузка котировок по выбранному Финансовому Инструменту
 		public ICommand LoadQuotesForInstrumentCommand { get; }
-		private bool CanLoadQuotesForInstrumentCommandExecute(object p) => this.SelectedFinancialInstrument != null;
+		private bool CanLoadQuotesForInstrumentCommandExecute(object p) => this.SelectedMenuItem is AFinancialInstrument;
 		private void OnLoadQuotesForInstrumentCommandExecuted(object p)
 		{
 			Stopwatch stopwatch = new Stopwatch();
 
 			stopwatch.Start();
-			int loadedQuotes = this.SelectedFinancialInstrument.LoadQuotes();
+			int loadedQuotes = ((AFinancialInstrument)this.SelectedMenuItem).LoadQuotes();
 			stopwatch.Stop();
 
 			MessageBox.Show($"Было загружено {loadedQuotes} котировок за {stopwatch.ElapsedMilliseconds / 1000} секунд.");
@@ -322,17 +291,17 @@ namespace StocksStand.ViewModels
 
 		//Добавление Финансового Инструмента в рабочую область
 		public ICommand ShowInstrumentQuotesCommand { get; }
-		private bool CanShowInstrumentQuotesCommandExecute(object p) => this.SelectedFinancialInstrument != null;
+		private bool CanShowInstrumentQuotesCommandExecute(object p) => this.SelectedMenuItem is AFinancialInstrument;
 		private void OnShowInstrumentQuotesCommandExecuted(object p)
 		{
-			this.ChartViewModel.AddFinancialInstrument(this.SelectedFinancialInstrument);
+			this.ChartViewModel.AddFinancialInstrument((AFinancialInstrument)this.SelectedMenuItem);
 		}
 
 		public ICommand HideInstrumentQuotesCommand { get; }
-		private bool CanHideInstrumentQuotesCommandExecute(object p) => this.SelectedFinancialInstrument != null;
+		private bool CanHideInstrumentQuotesCommandExecute(object p) => this.SelectedMenuItem is AFinancialInstrument;
 		private void OnHideInstrumentQuotesCommandExecuted(object p)
 		{
-			this.ChartViewModel.RemoveFinancialInstrument(this.SelectedFinancialInstrument);
+			this.ChartViewModel.RemoveFinancialInstrument((AFinancialInstrument)this.SelectedMenuItem);
 		}
 		#endregion
 	}

@@ -1,4 +1,5 @@
-﻿using StocksStand.Models.Base;
+﻿using StocksStand.Models.Abstractions;
+using StocksStand.Models.Base;
 using System.Collections.ObjectModel;
 
 namespace StocksStand.Models
@@ -19,11 +20,11 @@ namespace StocksStand.Models
 			set => Set(ref _Name, value);
 		}
 
-		private ObservableCollection<Stock> _Stocks;
-		public ObservableCollection<Stock> Stocks
+		private ObservableCollection<AFinancialInstrument> _FinancialInstruments;
+		public ObservableCollection<AFinancialInstrument> FinancialInstruments
 		{
-			get => _Stocks;
-			set => Set(ref _Stocks, value);
+			get => _FinancialInstruments;
+			set => Set(ref _FinancialInstruments, value);
 		}
 	}
 }

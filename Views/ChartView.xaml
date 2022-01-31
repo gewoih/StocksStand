@@ -11,7 +11,7 @@
 
 	<Grid>
 		<ScrollViewer VerticalScrollBarVisibility="Auto">
-			<ItemsControl ItemsSource="{Binding FinancialInstruments}" DisplayMemberPath="Item2"/>
+			<ItemsControl ItemsSource="{Binding FinancialInstruments}"/>
 		</ScrollViewer>
 	</Grid>
 </UserControl>

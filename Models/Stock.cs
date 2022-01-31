@@ -17,42 +17,36 @@ namespace StocksStand.Models
 			this.Quotes = new System.Collections.ObjectModel.ObservableCollection<Quote>();
 		}
 
-		private Industry _Industry;
-		public Industry Industry
+		public void LoadParamsByTicker()
 		{
-			get => _Industry;
-			set => Set(ref _Industry, value);
+			try
+			{
+				WebClient webClient = new WebClient();
+				webClient.Headers.Add("accept: application/json");
+				webClient.Headers.Add($"X-API-KEY: {ConfigurationManager.AppSettings["YahooFinanceApi"]}");
+
+				string response = webClient.DownloadString($"https://yfapi.net/v6/finance/quote?symbols={this.Ticker}");
+				dynamic obj = JsonConvert.DeserializeObject(response);
+				var result = obj.quoteResponse.result;
+
+				if (result.Count == 0)
+					throw new Exception("Инструмент с данным тикером не найден!");
+				else
+				{
+					this.Ticker = result[0].symbol;
+					this.Name = result[0].shortName;
+				}
+			}
+			catch
+			{
+				throw;
+			}
 		}
 
 		public override int LoadQuotes()
 		{
-			//Смотрим на уже существующие котировки. Если их нет или дата самой поздней котировки старше 10 лет, то сначала загружаем
-			//через Api Nasdaq, а потом ДОГРУЖАЕМ через Api YahooFinance. ИНАЧЕ просто загружаем через YahooFinance.
-			//В итоге получаем самые полные котировки с начала прошлого века по сегодняшнюю дату
-
 			try
 			{
-				/*WebClient webClient = new WebClient();
-
-				string response = webClient.DownloadString($"https://data.nasdaq.com/api/v3/datasets/WIKI/{this.Ticker}/data.json?order=asc&api_key={ConfigurationManager.AppSettings["NasdaqApi"]}");
-				dynamic obj = JsonConvert.DeserializeObject(response);
-				var result = obj.dataset_data.data;
-
-				foreach (var quote in result)
-				{
-					this.Quotes.Add(
-						new Quote 
-						{ 
-							FinancialInstrument = this,
-							Date = quote[0],
-							OpenPrice = quote[1],
-							HighPrice = quote[2],
-							LowPrice = quote[3],
-							ClosePrice = quote[4],
-							Volume = quote[5]
-						});
-				}*/
-
 				WebClient webClient = new WebClient();
 				webClient.Headers.Add("accept: application/json");
 				webClient.Headers.Add($"X-API-KEY: {ConfigurationManager.AppSettings["YahooFinanceApi"]}");

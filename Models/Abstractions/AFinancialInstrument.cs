@@ -27,18 +27,18 @@ namespace StocksStand.Models.Abstractions
 			set => Set(ref _Ticker, value);
 		}
 
-		private Country _Country;
-		public Country Country
-		{
-			get => _Country;
-			set => Set(ref _Country, value);
-		}
-
 		private ObservableCollection<Quote> _Quotes;
 		public ObservableCollection<Quote> Quotes
 		{
 			get => _Quotes;
 			set => Set(ref _Quotes, value);
+		}
+
+		private Industry _Industry;
+		public Industry Industry
+		{
+			get => _Industry;
+			set => Set(ref _Industry, value);
 		}
 		#endregion
 

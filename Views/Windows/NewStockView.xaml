@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:StocksStand.Views.Windows"
         mc:Ignorable="d"
         Title="Добавление новой бумаги"
-		Height="300" Width="550"
+		Height="250" Width="350"
 		FontSize="20"
 		WindowStartupLocation="CenterScreen"
 		Foreground="#A3B4D9"
@@ -22,21 +22,15 @@
 			<Grid>
 				<Grid.RowDefinitions>
 					<RowDefinition/>
-					<RowDefinition/>
-					<RowDefinition/>
 				</Grid.RowDefinitions>
 				<Grid.ColumnDefinitions>
 					<ColumnDefinition/>
 					<ColumnDefinition/>
 				</Grid.ColumnDefinitions>
 
-				<TextBlock Grid.Row="0" Text="Наименование:" VerticalAlignment="Center"/>
-				<TextBlock Grid.Row="1" Text="Тикер:" VerticalAlignment="Center"/>
-				<TextBlock Grid.Row="2" Text="Страна" VerticalAlignment="Center"/>
+				<TextBlock Grid.Row="0" Text="Тикер:" VerticalAlignment="Center"/>
 
-				<TextBox Grid.Row="0" Grid.Column="1" Text="{Binding NewStock.Name}"/>
-				<TextBox Grid.Row="1" Grid.Column="1" Text="{Binding NewStock.Ticker}"/>
-				<ComboBox Grid.Row="2" Grid.Column="1" ItemsSource="{Binding Countries}" DisplayMemberPath="Name" SelectedItem="{Binding NewStock.Country}"/>
+				<TextBox Grid.Row="0" Grid.Column="1" Text="{Binding NewStock.Ticker}"/>
 			</Grid>
 		</DockPanel>
 

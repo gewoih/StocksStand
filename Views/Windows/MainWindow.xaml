@@ -9,7 +9,7 @@
 		mc:Ignorable="d"
 		Title="StocksStand" Height="720" Width="1280"
 		Background="#192337"
-		FontSize="18"
+		FontSize="16"
 		WindowStartupLocation="CenterScreen">
 	
 	<Window.DataContext>
@@ -19,10 +19,10 @@
 	<Grid>
 		<Grid.ColumnDefinitions>
 			<ColumnDefinition Width="*"/>
-			<ColumnDefinition Width="3*"/>
+			<ColumnDefinition Width="4*"/>
 		</Grid.ColumnDefinitions>
 
-		<TreeView x:Name="mainTreeView" ItemsSource="{Binding Sectors}" Background="#020F2B" Foreground="#A3B4D9">
+		<TreeView x:Name="mainTreeView" ItemsSource="{Binding Countries}" Background="#020F2B" Foreground="#A3B4D9">
 			<TreeView.ContextMenu>
 				<ContextMenu>
 					<MenuItem Header="Создать новый сектор" Command="{Binding ShowNewSectorWindowCommand}"/>
@@ -43,15 +43,20 @@
 			</b:Interaction.Triggers>
 
 			<TreeView.ItemTemplate>
-				<HierarchicalDataTemplate ItemsSource="{Binding Industries}">
-					<TextBlock Margin="3" Text="{Binding Name}"/>
+				<HierarchicalDataTemplate ItemsSource="{Binding Sectors}">
+					<TextBlock Margin="3" Text="{Binding NameRu}"/>
 					<HierarchicalDataTemplate.ItemTemplate>
-						<HierarchicalDataTemplate ItemsSource="{Binding Stocks}">
+						<HierarchicalDataTemplate ItemsSource="{Binding Industries}">
 							<TextBlock Text="{Binding Name}"/>
 							<HierarchicalDataTemplate.ItemTemplate>
-								<DataTemplate>
+								<HierarchicalDataTemplate ItemsSource="{Binding FinancialInstruments}">
 									<TextBlock Text="{Binding Name}"/>
-								</DataTemplate>
+									<HierarchicalDataTemplate.ItemTemplate>
+										<DataTemplate>
+											<TextBlock Text="{Binding Name}"/>
+										</DataTemplate>
+									</HierarchicalDataTemplate.ItemTemplate>
+								</HierarchicalDataTemplate>
 							</HierarchicalDataTemplate.ItemTemplate>
 						</HierarchicalDataTemplate>
 					</HierarchicalDataTemplate.ItemTemplate>

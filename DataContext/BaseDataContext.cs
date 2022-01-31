@@ -19,8 +19,14 @@ namespace StocksStand.DataContext
 			/*Database.EnsureDeleted();
 			Database.EnsureCreated();
 
-			var s1 = new Sector { Name = "Технологии" };
-			var s2 = new Sector { Name = "Финансы" };
+			var c1 = new Currency { Fullname = "United States Dollar", Shortname = "USD", Symbol = '$' };
+			Currencies.AddRange(c1);
+
+			var co1 = new Country { Currency = c1, NameRu = "США", NameEn = "USA", Code = "US" };
+			Countries.AddRange(co1);
+
+			var s1 = new Sector { Name = "Технологии", Country = co1 };
+			var s2 = new Sector { Name = "Финансы", Country = co1 };
 			Sectors.AddRange(s1, s2);
 
 			var i1 = new Industry { Name = "Банки", Sector = s2 };
@@ -28,16 +34,10 @@ namespace StocksStand.DataContext
 			var i3 = new Industry { Name = "Разработка ПО", Sector = s1 };
 			Industries.AddRange(i1, i2, i3);
 
-			var c1 = new Currency { Fullname = "United Stated Dollar", Shortname = "USD", Symbol = '$' };
-			Currencies.AddRange(c1);
-
-			var co1 = new Country { Currency = c1, Name = "США" };
-			Countries.AddRange(co1);
-
-			var st1 = new Stock { Country = co1, Industry = i1, Name = "Bank of America", Ticker = "BAC" };
-			var st2 = new Stock { Country = co1, Industry = i2, Name = "Texas Instruments", Ticker = "TXN" };
-			var st3 = new Stock { Country = co1, Industry = i2, Name = "Applied Materials", Ticker = "AMAT" };
-			var st4 = new Stock { Country = co1, Industry = i3, Name = "Microsoft", Ticker = "MSFT" };
+			var st1 = new Stock { Industry = i1, Name = "Bank of America", Ticker = "BAC" };
+			var st2 = new Stock { Industry = i2, Name = "Texas Instruments", Ticker = "TXN" };
+			var st3 = new Stock { Industry = i2, Name = "Applied Materials", Ticker = "AMAT" };
+			var st4 = new Stock { Industry = i3, Name = "Microsoft", Ticker = "MSFT" };
 			Stocks.AddRange(st1, st2, st3, st4);
 
 			this.SaveChanges();*/

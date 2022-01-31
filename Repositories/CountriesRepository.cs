@@ -12,7 +12,7 @@ namespace StocksStand.Repositories
 
 		public override IQueryable<Country> GetAll()
 		{
-			return base.GetAll();
+			return base.GetAll().Include(c => c.Sectors).ThenInclude(s => s.Industries).ThenInclude(i => i.FinancialInstruments).ThenInclude(fi => fi.Quotes);
 		}
 	}
 }

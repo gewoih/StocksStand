@@ -12,6 +12,13 @@ namespace StocksStand.Models
 			set => Set(ref _Name, value);
 		}
 
+		private Country _Country;
+		public Country Country
+		{
+			get => _Country;
+			set => Set(ref _Country, value);
+		}
+
 		private ObservableCollection<Industry> _Industries;
 		public ObservableCollection<Industry> Industries
 		{
