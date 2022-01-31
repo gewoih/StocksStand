@@ -7,7 +7,7 @@
 		xmlns:vm="clr-namespace:StocksStand.ViewModels"
 		xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
 		mc:Ignorable="d"
-		Title="StocksStand" Height="720" Width="1280"
+		Title="StocksStand" Height="920" Width="1680"
 		Background="#192337"
 		FontSize="16"
 		WindowStartupLocation="CenterScreen">
@@ -16,7 +16,7 @@
 		<vm:MainViewModel/>
 	</Window.DataContext>
 	
-	<Grid>
+	<Grid x:Name="MainGrid">
 		<Grid.ColumnDefinitions>
 			<ColumnDefinition Width="*"/>
 			<ColumnDefinition Width="4*"/>

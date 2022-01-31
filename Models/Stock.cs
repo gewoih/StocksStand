@@ -17,32 +17,6 @@ namespace StocksStand.Models
 			this.Quotes = new System.Collections.ObjectModel.ObservableCollection<Quote>();
 		}
 
-		public void LoadParamsByTicker()
-		{
-			try
-			{
-				WebClient webClient = new WebClient();
-				webClient.Headers.Add("accept: application/json");
-				webClient.Headers.Add($"X-API-KEY: {ConfigurationManager.AppSettings["YahooFinanceApi"]}");
-
-				string response = webClient.DownloadString($"https://yfapi.net/v6/finance/quote?symbols={this.Ticker}");
-				dynamic obj = JsonConvert.DeserializeObject(response);
-				var result = obj.quoteResponse.result;
-
-				if (result.Count == 0)
-					throw new Exception("Инструмент с данным тикером не найден!");
-				else
-				{
-					this.Ticker = result[0].symbol;
-					this.Name = result[0].shortName;
-				}
-			}
-			catch
-			{
-				throw;
-			}
-		}
-
 		public override int LoadQuotes()
 		{
 			try
