@@ -5,13 +5,58 @@
 			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
 			 xmlns:local="clr-namespace:StocksStand.Views"
 			 xmlns:s="http://schemas.abtsoftware.co.uk/scichart"
-			 xmlns:ex="http://schemas.abtsoftware.co.uk/scichart/exampleExternals"
+			 xmlns:ext="http://schemas.abtsoftware.co.uk/scichart/exampleExternals"
 			 xmlns:vm="clr-namespace:StocksStand.ViewModels"
 			 mc:Ignorable="d">
 
+	<!--<UserControl.DataContext>
+		<vm:ChartViewModel/>
+	</UserControl.DataContext>-->
+
 	<Grid>
-		<ScrollViewer VerticalScrollBarVisibility="Auto">
-			<ItemsControl ItemsSource="{Binding FinancialInstruments}"/>
-		</ScrollViewer>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="15*"/>
+			<ColumnDefinition Width="*"/>
+		</Grid.ColumnDefinitions>
+
+		<Border Grid.Column="1" Background="#FF232426" BorderBrush="#323539" BorderThickness="0">
+			<WrapPanel HorizontalAlignment="Center" Orientation="Vertical">
+				<Button HorizontalAlignment="Center" Command="{Binding ChangeTimeframeCommand}" Content="Timeframe" Background="Black" BorderThickness="0"/>
+			</WrapPanel>
+		</Border>
+
+		<s:SciChartGroup Grid.Column="0" ItemsSource="{Binding ChartPaneViewModels}">
+			<s:SciChartGroup.ItemTemplate>
+				<DataTemplate>
+					<s:SciStockChart
+								BorderThickness="0,0,1,1"
+								IsAxisMarkersEnabled="True"
+								IsCursorEnabled="True"
+								IsPanEnabled="True"
+								IsRolloverEnabled="True"
+								RenderableSeries="{s:SeriesBinding ChartSeriesViewModels}"
+								VerticalChartGroupId="{Binding ParentViewModel.VerticalChartGroupId}"
+								FontSize="14">
+
+						<s:SciStockChart.XAxisStyle>
+							<Style TargetType="s:CategoryDateTimeAxis">
+								<Setter Property="DrawMajorBands" Value="True"/>
+								<Setter Property="DrawMinorGridLines" Value="False"/>
+								<Setter Property="VisibleRange" Value="{Binding ParentViewModel.XVisibleRange, Mode=TwoWay}"/>
+								<Setter Property="GrowBy" Value="0, 0.05"/>
+								<Setter Property="TextFormatting" Value="dd MMM yyyy"/>
+							</Style>
+						</s:SciStockChart.XAxisStyle>
+
+						<s:SciStockChart.YAxisStyle>
+							<Style TargetType="s:NumericAxis">
+								<Setter Property="TextFormatting" Value="{Binding YAxisTextFormatting}" />
+								<Setter Property="AutoRange" Value="Always" />
+							</Style>
+						</s:SciStockChart.YAxisStyle>
+					</s:SciStockChart>
+				</DataTemplate>
+			</s:SciChartGroup.ItemTemplate>
+		</s:SciChartGroup>
 	</Grid>
 </UserControl>

@@ -1,116 +1,118 @@
-﻿using SciChart.Charting.Model.ChartSeries;
-using SciChart.Charting.Model.DataSeries;
-using SciChart.Charting.Visuals;
-using SciChart.Charting.Visuals.RenderableSeries;
-using StocksStand.Commands;
+﻿using SciChart.Charting.Model.DataSeries;
 using StocksStand.Models.Abstractions;
 using StocksStand.ViewModels.Base;
 using System;
 using System.Collections.ObjectModel;
-using System.Windows.Media;
 using SciChart.Data.Model;
-using SciChart.Charting.Visuals.Axes;
-using SciChart.Charting.ChartModifiers;
-using SciChart.Charting;
 using System.Linq;
-using System.Windows;
-using System.Windows.Data;
-using System.Windows.Controls;
+using System.Windows.Input;
+using SciChart.Charting.ViewportManagers;
 using SciChart.Charting.Visuals.TradeChart;
+using SciChart.Charting.Common.Helpers;
+using StocksStand.Commands;
+using System.Collections;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Windows;
 
 namespace StocksStand.ViewModels
 {
 	public class ChartViewModel : BaseViewModel
 	{
-		#region Constructor
 		public ChartViewModel()
 		{
-			this.FinancialInstruments = new ObservableCollection<SciChartSurface>();
+			this.VerticalChartGroupId = Guid.NewGuid().ToString();
+			this.ViewportManager = new DefaultViewportManager();
 
-			this.SharedXRange = new IndexRange();
+			var closePaneCommand = new ActionCommand<IChildPane>(pane => ChartPaneViewModels.Remove((BaseChartPaneViewModel)pane));
+
+			this.ChangeTimeframeCommand = new RelayCommand(OnChangeTimeframeCommandExecuted, CanChangeTimeframeCommandExecute);
 		}
-		#endregion
 
-		#region Properties
-		//Выбранный Финансовый Инструмент
-		private ObservableCollection<SciChartSurface> _FinancialInstruments;
-		public ObservableCollection<SciChartSurface> FinancialInstruments
+		private IViewportManager _ViewportManager;
+		public IViewportManager ViewportManager
 		{
-			get => _FinancialInstruments;
-			set => Set(ref _FinancialInstruments, value);
+			get => _ViewportManager;
+			set => Set(ref _ViewportManager, value);
 		}
 
-		private IRange _SharedXRange;
-		public IRange SharedXRange
+		private string _VerticalChartGroupId;
+		public string VerticalChartGroupId
 		{
-			get => _SharedXRange;
-			set => Set(ref _SharedXRange, value);
+			get => _VerticalChartGroupId;
+			set => Set(ref _VerticalChartGroupId, value);
 		}
-		#endregion
+
+		private IndexRange _XVisibleRange;
+		public IndexRange XVisibleRange
+		{
+			get => _XVisibleRange;
+			set => Set(ref _XVisibleRange, value);
+		}
+
+		private ObservableCollection<BaseChartPaneViewModel> _ChartPaneViewModels = new ObservableCollection<BaseChartPaneViewModel>();
+		public ObservableCollection<BaseChartPaneViewModel> ChartPaneViewModels
+		{
+			get => _ChartPaneViewModels;
+			set => Set(ref _ChartPaneViewModels, value);
+		}
 
 		#region Commands
+		public ICommand ClosePaneCommand { get; }
+
+		public ICommand ChangeTimeframeCommand { get; }
+		private bool CanChangeTimeframeCommandExecute(object p) => true;
+		private void OnChangeTimeframeCommandExecuted(object p)
+		{
+			this.ChangeAllCandlesticksTimeframe(7);
+		}
+		#endregion
+
+		#region Methods
 		public void AddFinancialInstrument(AFinancialInstrument financialInstrument)
 		{
-			IRenderableSeries candlestickRenderableSeries = new FastCandlestickRenderableSeries()
-			{
-				AntiAliasing = false,
-
-				FillUp = new SolidColorBrush(Color.FromRgb(38, 166, 154)),
-				FillDown = new SolidColorBrush(Color.FromRgb(239, 83, 80)),
-				
-				StrokeUp = Color.FromRgb(38, 166, 154),
-				StrokeDown = Color.FromRgb(239, 83, 80),
-				StrokeThickness = 1,
-
-				BorderThickness = new Thickness(0, 0, 0, 0)
-			};
-
-			var ohlcDataSeries = new OhlcDataSeries<DateTime, double>();
-			foreach (var quote in financialInstrument.Quotes)
-			{
-				ohlcDataSeries.Append
-				(
-					quote.Date,
-					quote.OpenPrice,
-					quote.HighPrice,
-					quote.LowPrice,
-					quote.ClosePrice
-				);
-			}
-			candlestickRenderableSeries.DataSeries = ohlcDataSeries;
-
-			this.FinancialInstruments.Add(
-				new SciChartSurface()
-				{
-					Background = new SolidColorBrush(Color.FromRgb(22, 26, 37)),
-					Height = 340,
-					ChartTitle = financialInstrument.Name,
-					FontSize = 14,
-					XAxis = new CategoryDateTimeAxis() { TextFormatting = "dd MMM yyyy", DrawMinorGridLines = false },
-					YAxis = new NumericAxis() { TextFormatting = "#.00", DrawMinorGridLines = false, AutoRange = AutoRange.Always },
-					RenderableSeries = new ObservableCollection<IRenderableSeries> { candlestickRenderableSeries },
-
-					ChartModifier = new ModifierGroup
-									(
-										new ZoomPanModifier() { ClipModeX = ClipMode.ClipAtExtents, ZoomExtentsY = false, XyDirection = XyDirection.XDirection, ReceiveHandledEvents = true },
-										new MouseWheelZoomModifier() { ExecuteOn = ExecuteOn.MouseDoubleClick, XyDirection = XyDirection.XDirection, ReceiveHandledEvents = true },
-										new ZoomExtentsModifier() { ReceiveHandledEvents = true },
-										new CursorModifier() { ReceiveHandledEvents = true },
-										new RolloverModifier() { ShowAxisLabels = true, IsEnabled = true, DrawVerticalLine = true, SourceMode = SourceMode.AllVisibleSeries, ShowTooltipOn = ShowTooltipOptions.Always, ReceiveHandledEvents = true }
-									) { MouseEventGroup = "MainGroup" }
-				});
-
-				Binding visibleRangeBinding = new Binding("SharedXRange");
-				visibleRangeBinding.Source = this;
-				visibleRangeBinding.Mode = BindingMode.TwoWay;
-
-				BindingOperations.SetBinding((DependencyObject)this.FinancialInstruments.Last().XAxis, AxisBase.VisibleRangeProperty, visibleRangeBinding);
+			this.ChartPaneViewModels.Add(new PricePaneViewModel(this, financialInstrument) { IsFirstChartPane = true, ViewportManager = this.ViewportManager });
 		}
 
-		public void RemoveFinancialInstrument(AFinancialInstrument financialInstrument)
+		public void ChangeAllCandlesticksTimeframe(int timeframe)
 		{
-			//Костыль
-			this.FinancialInstruments.Remove(this.FinancialInstruments.FirstOrDefault(fi => fi.ChartTitle == financialInstrument.Name));
+			//Stopwatch sw = new Stopwatch();
+			//sw.Start();
+
+			foreach(var chart in this.ChartPaneViewModels)
+			{
+				foreach(var dataSeries in chart.ChartSeriesViewModels)
+				{
+					if (dataSeries.DataSeries is IOhlcDataSeries ohlcDataSeries)
+					{
+						var dates = ohlcDataSeries.XValues.Cast<DateTime>()
+															.Select((x, y) => new Tuple<int, DateTime>(y, x))
+															.GroupBy(x => x.Item1 / timeframe)
+															.ToList();
+
+						var sectionedSeries = ohlcDataSeries.YValues.Cast<double>()
+															.Select((x, y) => new Tuple<int, double>(y, x))
+															.GroupBy(x => x.Item1 / timeframe)
+															.ToList();
+
+						var newDataSeries = new OhlcDataSeries<DateTime, double>();
+						for (int i = 0; i < dates.Count; i++)
+						{
+							var newDate = dates[i].First();
+							var newOpen = sectionedSeries[i].First();
+							var newClose = sectionedSeries[i].Last();
+							var newHigh = sectionedSeries[i].Max();
+							var newLow = sectionedSeries[i].Min();
+
+							newDataSeries.Append(newDate.Item2, newOpen.Item2, newHigh.Item2, newLow.Item2, newClose.Item2);
+						}
+						dataSeries.DataSeries = newDataSeries;
+					}
+				}
+			}
+
+			//sw.Stop();
+			//MessageBox.Show(sw.ElapsedMilliseconds.ToString());
 		}
 		#endregion
 	}

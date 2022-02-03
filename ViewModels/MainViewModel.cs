@@ -301,7 +301,7 @@ namespace StocksStand.ViewModels
 		private bool CanHideInstrumentQuotesCommandExecute(object p) => this.SelectedMenuItem is AFinancialInstrument;
 		private void OnHideInstrumentQuotesCommandExecuted(object p)
 		{
-			this.ChartViewModel.RemoveFinancialInstrument((AFinancialInstrument)this.SelectedMenuItem);
+			//this.ChartViewModel.RemoveFinancialInstrument((AFinancialInstrument)this.SelectedMenuItem);
 		}
 		#endregion
 	}

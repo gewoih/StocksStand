@@ -17,7 +17,7 @@
     </PackageReference>
     <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.39" />
     <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="5.0.3" />
-    <PackageReference Include="SciChart" Version="6.5.0.13720" />	  
+    <PackageReference Include="SciChart" Version="6.5.1.26063" />	  
   </ItemGroup>
 
 </Project>
