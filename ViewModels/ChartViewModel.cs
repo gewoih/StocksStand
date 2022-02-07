@@ -64,7 +64,10 @@ namespace StocksStand.ViewModels
 		private bool CanChangeTimeframeCommandExecute(object p) => true;
 		private void OnChangeTimeframeCommandExecuted(object p)
 		{
-			this.ChangeAllCandlesticksTimeframe(7);
+			foreach(var chartPane in this.ChartPaneViewModels)
+			{
+				chartPane.UpdateDataSeriesByTimeframe(Convert.ToInt32(p));
+			}
 		}
 		#endregion
 
@@ -72,47 +75,6 @@ namespace StocksStand.ViewModels
 		public void AddFinancialInstrument(AFinancialInstrument financialInstrument)
 		{
 			this.ChartPaneViewModels.Add(new PricePaneViewModel(this, financialInstrument) { IsFirstChartPane = true, ViewportManager = this.ViewportManager });
-		}
-
-		public void ChangeAllCandlesticksTimeframe(int timeframe)
-		{
-			//Stopwatch sw = new Stopwatch();
-			//sw.Start();
-
-			foreach(var chart in this.ChartPaneViewModels)
-			{
-				foreach(var dataSeries in chart.ChartSeriesViewModels)
-				{
-					if (dataSeries.DataSeries is IOhlcDataSeries ohlcDataSeries)
-					{
-						var dates = ohlcDataSeries.XValues.Cast<DateTime>()
-															.Select((x, y) => new Tuple<int, DateTime>(y, x))
-															.GroupBy(x => x.Item1 / timeframe)
-															.ToList();
-
-						var sectionedSeries = ohlcDataSeries.YValues.Cast<double>()
-															.Select((x, y) => new Tuple<int, double>(y, x))
-															.GroupBy(x => x.Item1 / timeframe)
-															.ToList();
-
-						var newDataSeries = new OhlcDataSeries<DateTime, double>();
-						for (int i = 0; i < dates.Count; i++)
-						{
-							var newDate = dates[i].First();
-							var newOpen = sectionedSeries[i].First();
-							var newClose = sectionedSeries[i].Last();
-							var newHigh = sectionedSeries[i].Max();
-							var newLow = sectionedSeries[i].Min();
-
-							newDataSeries.Append(newDate.Item2, newOpen.Item2, newHigh.Item2, newLow.Item2, newClose.Item2);
-						}
-						dataSeries.DataSeries = newDataSeries;
-					}
-				}
-			}
-
-			//sw.Stop();
-			//MessageBox.Show(sw.ElapsedMilliseconds.ToString());
 		}
 		#endregion
 	}

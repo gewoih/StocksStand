@@ -1,6 +1,8 @@
 ﻿using SciChart.Charting.Model.ChartSeries;
 using SciChart.Charting.ViewportManagers;
+using SciChart.Charting.Visuals.RenderableSeries;
 using SciChart.Charting.Visuals.TradeChart;
+using StocksStand.Models.Abstractions;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
 
@@ -8,28 +10,42 @@ namespace StocksStand.ViewModels.Base
 {
 	public abstract class BaseChartPaneViewModel : BaseViewModel, IChildPane
 	{
-        private readonly ObservableCollection<IRenderableSeriesViewModel> _chartSeriesViewModels;
-
-        protected BaseChartPaneViewModel(ChartViewModel parentViewModel)
+        protected BaseChartPaneViewModel(ChartViewModel parentViewModel, AFinancialInstrument financialInstrument)
         {
-            _chartSeriesViewModels = new ObservableCollection<IRenderableSeriesViewModel>();
-            _ParentViewModel = parentViewModel;
+            this.ChartSeriesViewModels = new ObservableCollection<IRenderableSeriesViewModel>();
+            this.ParentViewModel = parentViewModel;
+            this.FinancialInstrument = financialInstrument;
             
-            ViewportManager = new DefaultViewportManager();
+            this.ViewportManager = new DefaultViewportManager();
         }
 
-        private readonly ChartViewModel _ParentViewModel;
+        private ObservableCollection<IRenderableSeriesViewModel> _ChartSeriesViewModels;
+        public ObservableCollection<IRenderableSeriesViewModel> ChartSeriesViewModels
+        {
+            get => _ChartSeriesViewModels;
+            set => Set(ref _ChartSeriesViewModels, value);
+        }
+
+        private ChartViewModel _ParentViewModel;
         public ChartViewModel ParentViewModel
         {
             get => _ParentViewModel;
+            set => Set(ref _ParentViewModel, value);
         }
 
-        public ObservableCollection<IRenderableSeriesViewModel> ChartSeriesViewModels
-        {
-            get => _chartSeriesViewModels;
-        }
+        private AFinancialInstrument _FinancialInstrument;
+        public AFinancialInstrument FinancialInstrument
+		{
+            get => _FinancialInstrument;
+            set => Set(ref _FinancialInstrument, value);
+		}
 
-        public IViewportManager ViewportManager { get; set; }
+        private IViewportManager _ViewportManager;
+        public IViewportManager ViewportManager
+		{
+            get => _ViewportManager;
+            set => Set(ref _ViewportManager, value);
+		}
 
         private string _YAxisTextFormatting;
         public string YAxisTextFormatting
@@ -66,13 +82,19 @@ namespace StocksStand.ViewModels.Base
             set => Set(ref _Height, value);
         }
 
+		#region Methods
+		public abstract void UpdateDataSeriesByTimeframe(int timeframe);
+
         public void ZoomExtents()
         {
         }
+		#endregion
 
-        public ICommand ClosePaneCommand
+		#region Commands
+		public ICommand ClosePaneCommand
         {
             get; set;
         }
-    }
+		#endregion
+	}
 }

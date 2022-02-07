@@ -21,7 +21,9 @@
 
 		<Border Grid.Column="1" Background="#FF232426" BorderBrush="#323539" BorderThickness="0">
 			<WrapPanel HorizontalAlignment="Center" Orientation="Vertical">
-				<Button HorizontalAlignment="Center" Command="{Binding ChangeTimeframeCommand}" Content="Timeframe" Background="Black" BorderThickness="0"/>
+				<Button HorizontalAlignment="Center" Command="{Binding ChangeTimeframeCommand}" CommandParameter="1" Content="1д." Background="Black" BorderThickness="0"/>
+				<Button HorizontalAlignment="Center" Command="{Binding ChangeTimeframeCommand}" CommandParameter="7" Content="7д." Background="Black" BorderThickness="0"/>
+				<Button HorizontalAlignment="Center" Command="{Binding ChangeTimeframeCommand}" CommandParameter="30" Content="30д." Background="Black" BorderThickness="0"/>
 			</WrapPanel>
 		</Border>
 

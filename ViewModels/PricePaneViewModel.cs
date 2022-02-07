@@ -5,9 +5,11 @@ using SciChart.Charting.Model.DataSeries;
 using SciChart.Charting.Visuals;
 using SciChart.Charting.Visuals.Axes;
 using SciChart.Charting.Visuals.RenderableSeries;
+using StocksStand.Models;
 using StocksStand.Models.Abstractions;
 using StocksStand.ViewModels.Base;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
@@ -19,7 +21,7 @@ namespace StocksStand.ViewModels
 	public class PricePaneViewModel : BaseChartPaneViewModel
 	{
 		public PricePaneViewModel(ChartViewModel parentViewModel, AFinancialInstrument financialInstrument)
-		   : base(parentViewModel)
+		   : base(parentViewModel, financialInstrument)
 		{
 			var stockPrices = new OhlcDataSeries<DateTime, double>() { SeriesName = financialInstrument.Name };
 
@@ -53,6 +55,33 @@ namespace StocksStand.ViewModels
 			});
 
 			YAxisTextFormatting = $"#0.00";
+		}
+
+		public override void UpdateDataSeriesByTimeframe(int timeframe)
+		{
+			foreach (var dataSeriesViewModel in this.ChartSeriesViewModels)
+			{
+				if (dataSeriesViewModel.DataSeries is IOhlcDataSeries ohlcDataSeries)
+				{
+					var sectionedSeries = this.FinancialInstrument.Quotes
+														.Select((x, y) => new Tuple<int, Quote>(y, x))
+														.GroupBy(x => x.Item1 / timeframe)
+														.ToList();
+
+					var newDataSeries = new OhlcDataSeries<DateTime, double>();
+					for (int i = 0; i < sectionedSeries.Count; i++)
+					{
+						var newDate = sectionedSeries[i].First().Item2.Date;
+						var newOpen = sectionedSeries[i].First().Item2.OpenPrice;
+						var newClose = sectionedSeries[i].Last().Item2.ClosePrice;
+						var newHigh = sectionedSeries[i].Max(t => t.Item2.HighPrice);
+						var newLow = sectionedSeries[i].Min(t => t.Item2.LowPrice);
+
+						newDataSeries.Append(newDate, newOpen, newHigh, newLow, newClose);
+					}
+					dataSeriesViewModel.DataSeries = newDataSeries;
+				}
+			}
 		}
 	}
 }
