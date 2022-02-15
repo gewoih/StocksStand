@@ -3,6 +3,7 @@ using SciChart.Charting.ViewportManagers;
 using SciChart.Charting.Visuals.RenderableSeries;
 using SciChart.Charting.Visuals.TradeChart;
 using StocksStand.Models.Abstractions;
+using System;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
 
@@ -84,7 +85,7 @@ namespace StocksStand.ViewModels.Base
             set => Set(ref _Height, value);
         }
 
-		#region Methods
+        #region Methods
         public void ZoomExtents()
         {
         }

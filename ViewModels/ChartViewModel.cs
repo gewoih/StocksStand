@@ -17,8 +17,7 @@ namespace StocksStand.ViewModels
 		{
 			this.VerticalChartGroupId = Guid.NewGuid().ToString();
 			this.ViewportManager = new DefaultViewportManager();
-
-			var closePaneCommand = new ActionCommand<IChildPane>(pane => ChartPaneViewModels.Remove((BaseChartPaneViewModel)pane));
+			this.ZoomExtentsCommand = new ActionCommand(ZoomExtends);
 
 			this.ChangeTimeframeCommand = new RelayCommand(OnChangeTimeframeCommandExecuted, CanChangeTimeframeCommandExecute);
 		}
@@ -53,6 +52,7 @@ namespace StocksStand.ViewModels
 
 		#region Commands
 		public ICommand ClosePaneCommand { get; }
+		public ICommand ZoomExtentsCommand { get; private set; }
 
 		public ICommand ChangeTimeframeCommand { get; }
 		private bool CanChangeTimeframeCommandExecute(object p) => true;
@@ -63,13 +63,20 @@ namespace StocksStand.ViewModels
 				if (chartPane is PricePaneViewModel pricePane)
 					pricePane.UpdateDataSeriesByTimeframe(Convert.ToInt32(p));
 			}
+
+			this.ZoomExtentsCommand.Execute(null);
 		}
 		#endregion
 
 		#region Methods
+		private void ZoomExtends()
+		{
+			this.ViewportManager.AnimateZoomExtents(TimeSpan.FromMilliseconds(500));
+		}
+
 		public void AddFinancialInstrument(AFinancialInstrument financialInstrument)
 		{
-			this.ChartPaneViewModels.Add(new PricePaneViewModel(this, financialInstrument) { IsFirstChartPane = true, ViewportManager = this.ViewportManager });
+			this.ChartPaneViewModels.Add(new PricePaneViewModel(this, financialInstrument) { IsFirstChartPane = true, ViewportManager = this.ViewportManager, ClosePaneCommand = new ActionCommand<IChildPane>(pane => ChartPaneViewModels.Remove((BaseChartPaneViewModel)pane)) });
 		}
 		#endregion
 	}
