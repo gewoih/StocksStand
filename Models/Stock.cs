@@ -1,14 +1,18 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using StocksStand.DataContext;
 using StocksStand.Models.Abstractions;
 using StocksStand.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
+using System.Threading;
 using System.Windows;
 
 namespace StocksStand.Models
@@ -18,6 +22,13 @@ namespace StocksStand.Models
 		public Stock()
 		{
 			this.Quotes = new System.Collections.ObjectModel.ObservableCollection<Quote>();
+		}
+
+		private List<FinancialDataType> _FinancialData;
+		public List<FinancialDataType> FinancialData
+		{
+			get => _FinancialData;
+			set => Set(ref _FinancialData, value);
 		}
 
 		public override int LoadQuotes()
@@ -54,30 +65,6 @@ namespace StocksStand.Models
 				}
 				//Обновляем репозиторий
 				new StocksRepository(new BaseDataContext()).Update(this);
-
-				/*WebClient webClient = new WebClient();
-				webClient.Headers.Add("accept: application/json");
-				webClient.Headers.Add($"X-API-KEY: {ConfigurationManager.AppSettings["YahooFinanceApi"]}");
-
-				string response = webClient.DownloadString($"https://yfapi.net/v8/finance/chart/{this.Ticker}?range=10y&interval=1d");
-				dynamic obj = JsonConvert.DeserializeObject(response);
-				var result = obj.chart.result[0];
-
-				for (int i = 0; i < result.timestamp.Count; i++)
-				{
-					this.Quotes.Add(
-						new Quote
-						{
-							FinancialInstrument = this,
-							Date = new DateTime(1970, 1, 1, 0, 0, 0, 0).AddSeconds((double)result.timestamp[i]).ToLocalTime(),
-							OpenPrice = result.indicators.quote[0].open[i],
-							HighPrice = result.indicators.quote[0].high[i],
-							LowPrice = result.indicators.quote[0].low[i],
-							ClosePrice = result.indicators.quote[0].close[i],
-							Volume = result.indicators.quote[0].volume[i]
-						});
-				}
-			   new StocksRepository(new BaseDataContext()).Update(this);*/
 			}
 			catch (Exception e)
 			{
@@ -86,6 +73,54 @@ namespace StocksStand.Models
 			}
 			
 			return this.Quotes.Count();
+		}
+
+		public int LoadFinancialData()
+		{
+			int loadedData = 0;
+
+			try
+			{
+				WebClient webClient = new WebClient();
+				List<dynamic> jsonObjects = new List<dynamic>();
+				jsonObjects.Add(JsonConvert.DeserializeObject(webClient.DownloadString($"https://financialmodelingprep.com/api/v3/cash-flow-statement/{this.Ticker}?apikey={ConfigurationManager.AppSettings["FinancialModelingPrepApi"]}")));
+				Thread.Sleep(1000);
+				jsonObjects.Add(JsonConvert.DeserializeObject(webClient.DownloadString($"https://financialmodelingprep.com/api/v3/balance-sheet-statement/{this.Ticker}?apikey={ConfigurationManager.AppSettings["FinancialModelingPrepApi"]}")));
+				Thread.Sleep(1000);
+				jsonObjects.Add(JsonConvert.DeserializeObject(webClient.DownloadString($"https://financialmodelingprep.com/api/v3/income-statement/{this.Ticker}?apikey={ConfigurationManager.AppSettings["FinancialModelingPrepApi"]}")));
+
+				var financialDataTypesRepository = new FinancialDataTypesRepository(new BaseDataContext());
+				var financialDataTypes = financialDataTypesRepository.GetAll().ToList();
+				foreach (var dataType in financialDataTypes) //Проходим по всем существующим финансовым показателям
+				{
+					foreach (var jsonObject in jsonObjects) //Проходим по всем Api ответам в формате Json
+					{
+						if (jsonObject[0][dataType.enName] != null)
+						{
+							foreach (var property in jsonObject) //Проходим по данным за последние 5 лет
+							{
+								dataType.Values.Add(
+									new FinancialDataValue
+									{ 
+										Stock = this,
+										FinancialDataType = dataType,
+										date = property["date"],
+										value = property[dataType.enName]
+									});
+
+								loadedData++;
+							}
+						}
+					}
+					financialDataTypesRepository.Update(dataType);
+				}
+			}
+			catch (Exception e)
+			{
+				MessageBox.Show(e.Message);
+			}
+
+			return loadedData;
 		}
 	}
 }

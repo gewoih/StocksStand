@@ -23,15 +23,19 @@ namespace StocksStand.ViewModels
 		public PricePaneViewModel(ChartViewModel parentViewModel, AFinancialInstrument financialInstrument)
 		   : base(parentViewModel, financialInstrument)
 		{
-			var stockPrices = new OhlcDataSeries<DateTime, double>() { SeriesName = financialInstrument.Name };
+		}
+
+		protected override void LoadDataSeries()
+		{
+			var stockPrices = new OhlcDataSeries<DateTime, double>() { SeriesName = this.FinancialInstrument.Name };
 
 			stockPrices.Append
 				(
-					financialInstrument.Quotes.Select(q => q.Date),
-					financialInstrument.Quotes.Select(q => q.OpenPrice),
-					financialInstrument.Quotes.Select(q => q.HighPrice),
-					financialInstrument.Quotes.Select(q => q.LowPrice),
-					financialInstrument.Quotes.Select(q => q.ClosePrice)
+					this.FinancialInstrument.Quotes.Select(q => q.Date),
+					this.FinancialInstrument.Quotes.Select(q => q.OpenPrice),
+					this.FinancialInstrument.Quotes.Select(q => q.HighPrice),
+					this.FinancialInstrument.Quotes.Select(q => q.LowPrice),
+					this.FinancialInstrument.Quotes.Select(q => q.ClosePrice)
 				);
 
 			this.ChartSeriesViewModels.Add(new CandlestickRenderableSeriesViewModel
@@ -54,10 +58,10 @@ namespace StocksStand.ViewModels
 				StrokeThickness = 1
 			});
 
-			YAxisTextFormatting = $"#0.00";
+			this.YAxisTextFormatting = $"#0.00";
 		}
 
-		public override void UpdateDataSeriesByTimeframe(int timeframe)
+		public void UpdateDataSeriesByTimeframe(int timeframe)
 		{
 			foreach (var dataSeriesViewModel in this.ChartSeriesViewModels)
 			{
@@ -68,7 +72,7 @@ namespace StocksStand.ViewModels
 														.GroupBy(x => x.Item1 / timeframe)
 														.ToList();
 
-					var newDataSeries = new OhlcDataSeries<DateTime, double>();
+					var newDataSeries = new OhlcDataSeries<DateTime, double>() { SeriesName = this.FinancialInstrument.Name };
 					for (int i = 0; i < sectionedSeries.Count; i++)
 					{
 						var newDate = sectionedSeries[i].First().Item2.Date;

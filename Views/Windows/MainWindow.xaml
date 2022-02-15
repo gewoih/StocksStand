@@ -30,6 +30,7 @@
 					<Separator/>
 					<MenuItem Header="Добавить инструмент" Command="{Binding ShowNewStockWindowCommand}"/>
 					<MenuItem Header="Загрузить котировки" Command="{Binding LoadQuotesForInstrumentCommand}"/>
+					<MenuItem Header="Загрузить финансовые показатели" Command="{Binding LoadFinancialDataForInstrumentCommand}"/>
 					<Separator/>
 					<MenuItem Header="Добавить в рабочую область" Command="{Binding ShowInstrumentQuotesCommand}"/>
 					<MenuItem Header="Удалить из рабочей области" Command="{Binding HideInstrumentQuotesCommand}"/>

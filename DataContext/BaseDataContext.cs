@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using StocksStand.Models;
 using System;
+using System.Collections.Generic;
 using System.Configuration;
 
 namespace StocksStand.DataContext
@@ -13,6 +14,8 @@ namespace StocksStand.DataContext
 		public DbSet<Industry> Industries { get; set; }
 		public DbSet<Stock> Stocks { get; set; }
 		public DbSet<Quote> Quotes { get; set; }
+		public DbSet<FinancialDataType> FinancialDataTypes { get; set; }
+		public DbSet<FinancialDataValue> FinancialDataValues { get; set; }
 
 		public BaseDataContext() : base()
 		{
@@ -34,18 +37,31 @@ namespace StocksStand.DataContext
 			var i3 = new Industry { Name = "Разработка ПО", Sector = s1 };
 			Industries.AddRange(i1, i2, i3);
 
-			var st1 = new Stock { Industry = i1, Name = "Bank of America", Ticker = "BAC" };
-			var st2 = new Stock { Industry = i2, Name = "Texas Instruments", Ticker = "TXN" };
-			var st3 = new Stock { Industry = i2, Name = "Applied Materials", Ticker = "AMAT" };
-			var st4 = new Stock { Industry = i3, Name = "Microsoft", Ticker = "MSFT" };
+			var fd1 = new FinancialDataType { enName = "cashAndCashEquivalents", ruName = "Денежные средства и их эквиваленты" };
+			var fd2 = new FinancialDataType { enName = "totalDebt", ruName = "Общая задолженность" };
+			var fd3 = new FinancialDataType { enName = "revenue", ruName = "Общий доход" };
+			var fd4 = new FinancialDataType { enName = "freeCashFlow", ruName = "Свободные денежные средства" };
+			var fd5 = new FinancialDataType { enName = "totalEquity", ruName = "Общий капитал" };
+			var fd6 = new FinancialDataType { enName = "eps", ruName = "Прибыль на акцию" };
+			var fd7 = new FinancialDataType { enName = "grossProfit", ruName = "Валовая прибыль" };
+			var fd8 = new FinancialDataType { enName = "operatingCashFlow", ruName = "Операционный денежный поток" };
+			var fd9 = new FinancialDataType { enName = "ebitda", ruName = "Прибыль до вычета процентов, налогов и амортизации" };
+			FinancialDataTypes.AddRange(fd1, fd2, fd3, fd4, fd5, fd6, fd7, fd8, fd9);
+
+			var st1 = new Stock { Ticker = "jpm", Industry = i1 };
+			var st2 = new Stock { Ticker = "aapl", Industry = i3 };
+			var st3 = new Stock { Ticker = "amat", Industry = i2 };
+			var st4 = new Stock { Ticker = "msft", Industry = i3 };
+			st1.LoadParamsByTicker();
+			st2.LoadParamsByTicker();
+			st3.LoadParamsByTicker();
+			st4.LoadParamsByTicker();
 			Stocks.AddRange(st1, st2, st3, st4);
 
 			this.SaveChanges();*/
 		}
 
-		public BaseDataContext(DbContextOptions options) : base(options)
-		{
-		}
+		public BaseDataContext(DbContextOptions options) : base(options) { }
 
 		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 		{

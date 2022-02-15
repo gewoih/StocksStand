@@ -33,6 +33,7 @@ namespace StocksStand.ViewModels
 			this.AddStockCommand = new RelayCommand(OnAddStockCommandExecuted, CanAddStockCommandExecute);
 
 			this.LoadQuotesForInstrumentCommand = new RelayCommand(OnLoadQuotesForInstrumentCommandExecuted, CanLoadQuotesForInstrumentCommandExecute);
+			this.LoadFinancialDataForInstrumentCommand = new RelayCommand(OnLoadFinancialDataForInstrumentCommandExecuted, CanLoadFinancialDataForInstrumentCommandExecute);
 
 			this.ShowInstrumentQuotesCommand = new RelayCommand(OnShowInstrumentQuotesCommandExecuted, CanShowInstrumentQuotesCommandExecute);
 			this.HideInstrumentQuotesCommand = new RelayCommand(OnHideInstrumentQuotesCommandExecuted, CanHideInstrumentQuotesCommandExecute);
@@ -51,7 +52,7 @@ namespace StocksStand.ViewModels
 			set => Set(ref _ChartViewModel, value);
 		}
 
-		//Список всех Секторов
+		//Список всех стран
 		private ObservableCollection<Country> _Countries;
 		public ObservableCollection<Country> Countries
 		{
@@ -59,7 +60,9 @@ namespace StocksStand.ViewModels
 			set => Set(ref _Countries, value);
 		}
 
-		//Выбранный Сектор
+
+
+		//Выбранный элемент
 		private object _SelectedMenuItem;
 		public object SelectedMenuItem
 		{
@@ -76,7 +79,6 @@ namespace StocksStand.ViewModels
 			get => _NewSector;
 			set => Set(ref _NewSector, value);
 		}
-
 		//Форма создания/редактирования Сектора
 		private NewSectorView _NewSectorView;
 		public NewSectorView NewSectorView
@@ -94,7 +96,6 @@ namespace StocksStand.ViewModels
 			get => _NewIndustry;
 			set => Set(ref _NewIndustry, value);
 		}
-
 		//Форма создания/редактирования Отрасли
 		private NewIndustryView _NewIndustryView;
 		public NewIndustryView NewIndustryView
@@ -112,7 +113,6 @@ namespace StocksStand.ViewModels
 			get => _NewStock;
 			set => Set(ref _NewStock, value);
 		}
-
 		//Форма создания/редактирования Акции
 		private NewStockView _NewStockView;
 		public NewStockView NewStockView
@@ -289,6 +289,22 @@ namespace StocksStand.ViewModels
 
 
 
+		//Загрузка финансовых показателей по выбранному Финансовому Инструменту
+		public ICommand LoadFinancialDataForInstrumentCommand { get; }
+		private bool CanLoadFinancialDataForInstrumentCommandExecute(object p) => this.SelectedMenuItem is Stock;
+		private void OnLoadFinancialDataForInstrumentCommandExecuted(object p)
+		{
+			Stopwatch stopwatch = new Stopwatch();
+			stopwatch.Start();
+
+			int loadedData = ((Stock)this.SelectedMenuItem).LoadFinancialData();
+
+			stopwatch.Stop();
+			MessageBox.Show($"Было загружено {loadedData} финансовых показателей за {stopwatch.ElapsedMilliseconds / 1000} секунд.");
+		}
+
+
+
 		//Добавление Финансового Инструмента в рабочую область
 		public ICommand ShowInstrumentQuotesCommand { get; }
 		private bool CanShowInstrumentQuotesCommandExecute(object p) => this.SelectedMenuItem is AFinancialInstrument;
@@ -297,6 +313,7 @@ namespace StocksStand.ViewModels
 			this.ChartViewModel.AddFinancialInstrument((AFinancialInstrument)this.SelectedMenuItem);
 		}
 
+		//Удаление Финансового Инструмента из рабочей области
 		public ICommand HideInstrumentQuotesCommand { get; }
 		private bool CanHideInstrumentQuotesCommandExecute(object p) => this.SelectedMenuItem is AFinancialInstrument;
 		private void OnHideInstrumentQuotesCommandExecuted(object p)

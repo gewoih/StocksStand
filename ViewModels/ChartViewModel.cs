@@ -1,19 +1,13 @@
-﻿using SciChart.Charting.Model.DataSeries;
-using StocksStand.Models.Abstractions;
+﻿using StocksStand.Models.Abstractions;
 using StocksStand.ViewModels.Base;
 using System;
 using System.Collections.ObjectModel;
 using SciChart.Data.Model;
-using System.Linq;
 using System.Windows.Input;
 using SciChart.Charting.ViewportManagers;
 using SciChart.Charting.Visuals.TradeChart;
 using SciChart.Charting.Common.Helpers;
 using StocksStand.Commands;
-using System.Collections;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Windows;
 
 namespace StocksStand.ViewModels
 {
@@ -64,9 +58,10 @@ namespace StocksStand.ViewModels
 		private bool CanChangeTimeframeCommandExecute(object p) => true;
 		private void OnChangeTimeframeCommandExecuted(object p)
 		{
-			foreach(var chartPane in this.ChartPaneViewModels)
+			foreach (var chartPane in this.ChartPaneViewModels)
 			{
-				chartPane.UpdateDataSeriesByTimeframe(Convert.ToInt32(p));
+				if (chartPane is PricePaneViewModel pricePane)
+					pricePane.UpdateDataSeriesByTimeframe(Convert.ToInt32(p));
 			}
 		}
 		#endregion

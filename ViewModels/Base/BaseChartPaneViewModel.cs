@@ -17,6 +17,8 @@ namespace StocksStand.ViewModels.Base
             this.FinancialInstrument = financialInstrument;
             
             this.ViewportManager = new DefaultViewportManager();
+
+            this.LoadDataSeries();
         }
 
         private ObservableCollection<IRenderableSeriesViewModel> _ChartSeriesViewModels;
@@ -83,15 +85,15 @@ namespace StocksStand.ViewModels.Base
         }
 
 		#region Methods
-		public abstract void UpdateDataSeriesByTimeframe(int timeframe);
-
         public void ZoomExtents()
         {
         }
-		#endregion
 
-		#region Commands
-		public ICommand ClosePaneCommand
+        protected abstract void LoadDataSeries();
+        #endregion
+
+        #region Commands
+        public ICommand ClosePaneCommand
         {
             get; set;
         }
