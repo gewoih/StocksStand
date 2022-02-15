@@ -33,6 +33,9 @@ namespace StocksStand.Models
 
 		public override int LoadQuotes()
 		{
+			//Счетчик добавленных котировок
+			int quotesCounter = 0;
+
 			try
 			{
 				//Скачиваем файл через Stooq.com
@@ -51,8 +54,11 @@ namespace StocksStand.Models
 				foreach(var line in lines)
 				{
 					List<string> quotes = line.Split(',').ToList();
-					this.Quotes.Add(
-						new Quote
+
+					//Если в котировках акции уже есть котировка с такой датой, то добавлять такую же котировку не нужно
+					if (this.Quotes.FirstOrDefault(q => q.Date == DateTime.Parse(quotes.ElementAtOrDefault(0))) == null)
+					{
+						this.Quotes.Add(new Quote
 						{
 							FinancialInstrument = this,
 							Date = DateTime.Parse(quotes.ElementAtOrDefault(0)),
@@ -62,6 +68,8 @@ namespace StocksStand.Models
 							ClosePrice = Double.Parse(quotes.ElementAtOrDefault(4), CultureInfo.InvariantCulture),
 							//Volume = Double.Parse(quotes.ElementAtOrDefault(5), CultureInfo.InvariantCulture)
 						});
+						quotesCounter++;
+					}
 				}
 				//Обновляем репозиторий
 				new StocksRepository(new BaseDataContext()).Update(this);
@@ -72,7 +80,7 @@ namespace StocksStand.Models
 				return 0;
 			}
 			
-			return this.Quotes.Count();
+			return quotesCounter;
 		}
 
 		public int LoadFinancialData()
