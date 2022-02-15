@@ -61,12 +61,12 @@ namespace StocksStand.Models
 						this.Quotes.Add(new Quote
 						{
 							FinancialInstrument = this,
-							Date = DateTime.Parse(quotes.ElementAtOrDefault(0)),
-							OpenPrice = Double.Parse(quotes.ElementAtOrDefault(1), CultureInfo.InvariantCulture),
-							HighPrice = Double.Parse(quotes.ElementAtOrDefault(2), CultureInfo.InvariantCulture),
-							LowPrice = Double.Parse(quotes.ElementAtOrDefault(3), CultureInfo.InvariantCulture),
-							ClosePrice = Double.Parse(quotes.ElementAtOrDefault(4), CultureInfo.InvariantCulture),
-							//Volume = Double.Parse(quotes.ElementAtOrDefault(5), CultureInfo.InvariantCulture)
+							Date = Convert.ToDateTime(quotes.ElementAtOrDefault(0)),
+							OpenPrice = Convert.ToDouble(quotes.ElementAtOrDefault(1), CultureInfo.InvariantCulture),
+							HighPrice = Convert.ToDouble(quotes.ElementAtOrDefault(2), CultureInfo.InvariantCulture),
+							LowPrice = Convert.ToDouble(quotes.ElementAtOrDefault(3), CultureInfo.InvariantCulture),
+							ClosePrice = Convert.ToDouble(quotes.ElementAtOrDefault(4), CultureInfo.InvariantCulture),
+							Volume = Convert.ToDouble(quotes.ElementAtOrDefault(5))
 						});
 						quotesCounter++;
 					}
