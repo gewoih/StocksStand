@@ -85,7 +85,8 @@ namespace StocksStand.Models
 
 		public int LoadFinancialData()
 		{
-			int loadedData = 0;
+			//Счетчик загруженных финансовых показателей
+			int loadedDataCounter = 0;
 
 			try
 			{
@@ -107,16 +108,19 @@ namespace StocksStand.Models
 						{
 							foreach (var property in jsonObject) //Проходим по данным за последние 5 лет
 							{
-								dataType.Values.Add(
-									new FinancialDataValue
-									{ 
-										Stock = this,
-										FinancialDataType = dataType,
-										date = property["date"],
-										value = property[dataType.enName]
-									});
+								if (dataType.Values.FirstOrDefault(v => v.FinancialDataType == dataType && v.date == (DateTime)property["date"]) == null)
+								{
+									dataType.Values.Add(
+										new FinancialDataValue
+										{
+											Stock = this,
+											FinancialDataType = dataType,
+											date = property["date"],
+											value = property[dataType.enName]
+										});
 
-								loadedData++;
+									loadedDataCounter++;
+								}
 							}
 						}
 					}
@@ -128,7 +132,7 @@ namespace StocksStand.Models
 				MessageBox.Show(e.Message);
 			}
 
-			return loadedData;
+			return loadedDataCounter;
 		}
 	}
 }

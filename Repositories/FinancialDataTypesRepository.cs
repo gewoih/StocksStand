@@ -1,4 +1,5 @@
-﻿using StocksStand.DataContext;
+﻿using Microsoft.EntityFrameworkCore;
+using StocksStand.DataContext;
 using StocksStand.Models;
 using StocksStand.Repositories.Base;
 using System;
@@ -15,7 +16,7 @@ namespace StocksStand.Repositories
 
 		public override IQueryable<FinancialDataType> GetAll()
 		{
-			return base.GetAll();
+			return base.GetAll().Include(fd => fd.Values);
 		}
 	}
 }
