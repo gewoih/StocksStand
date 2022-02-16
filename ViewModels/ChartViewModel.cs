@@ -8,6 +8,7 @@ using SciChart.Charting.ViewportManagers;
 using SciChart.Charting.Visuals.TradeChart;
 using SciChart.Charting.Common.Helpers;
 using StocksStand.Commands;
+using StocksStand.Models.Enums;
 
 namespace StocksStand.ViewModels
 {
@@ -61,7 +62,9 @@ namespace StocksStand.ViewModels
 			foreach (var chartPane in this.ChartPaneViewModels)
 			{
 				if (chartPane is PricePaneViewModel pricePane)
-					pricePane.UpdateDataSeriesByTimeframe(Convert.ToInt32(p));
+				{
+					pricePane.UpdateDataSeriesByTimeframe((CandleSize)Convert.ToInt32(p));
+				}
 			}
 
 			this.ZoomExtentsCommand.Execute(null);

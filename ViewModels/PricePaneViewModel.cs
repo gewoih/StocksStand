@@ -7,10 +7,12 @@ using SciChart.Charting.Visuals.Axes;
 using SciChart.Charting.Visuals.RenderableSeries;
 using StocksStand.Models;
 using StocksStand.Models.Abstractions;
+using StocksStand.Models.Enums;
 using StocksStand.ViewModels.Base;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Linq;
 using System.Windows;
 using System.Windows.Data;
@@ -61,25 +63,26 @@ namespace StocksStand.ViewModels
 			this.YAxisTextFormatting = $"#0.00";
 		}
 
-		public void UpdateDataSeriesByTimeframe(int timeframe)
+		public void UpdateDataSeriesByTimeframe(CandleSize candleSize)
 		{
 			foreach (var dataSeriesViewModel in this.ChartSeriesViewModels)
 			{
 				if (dataSeriesViewModel.DataSeries is IOhlcDataSeries ohlcDataSeries)
 				{
-					var sectionedSeries = this.FinancialInstrument.Quotes
-														.Select((x, y) => new Tuple<int, Quote>(y, x))
-														.GroupBy(x => x.Item1 / timeframe)
-														.ToList();
+					var sectionedSeries = this.FinancialInstrument.Quotes.GroupBy(q => new KeyValuePair<int, int>(q.Date.Year, q.Date.DayOfYear));
+					if (candleSize == CandleSize.Weekly)
+						sectionedSeries = this.FinancialInstrument.Quotes.GroupBy(q => new KeyValuePair<int, int>(q.Date.Year, new GregorianCalendar().GetWeekOfYear(q.Date, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday)));
+					else if (candleSize == CandleSize.Monthly)
+						sectionedSeries = this.FinancialInstrument.Quotes.GroupBy(q => new KeyValuePair<int, int>(q.Date.Year, q.Date.Month));
 
 					var newDataSeries = new OhlcDataSeries<DateTime, double>() { SeriesName = this.FinancialInstrument.Name };
-					for (int i = 0; i < sectionedSeries.Count; i++)
+					foreach (var series in sectionedSeries)
 					{
-						var newDate = sectionedSeries[i].First().Item2.Date;
-						var newOpen = sectionedSeries[i].First().Item2.OpenPrice;
-						var newClose = sectionedSeries[i].Last().Item2.ClosePrice;
-						var newHigh = sectionedSeries[i].Max(t => t.Item2.HighPrice);
-						var newLow = sectionedSeries[i].Min(t => t.Item2.LowPrice);
+						var newDate = series.First().Date;
+						var newOpen = series.First().OpenPrice;
+						var newClose = series.Last().ClosePrice;
+						var newHigh = series.Max(t => t.HighPrice);
+						var newLow = series.Min(t => t.LowPrice);
 
 						newDataSeries.Append(newDate, newOpen, newHigh, newLow, newClose);
 					}
