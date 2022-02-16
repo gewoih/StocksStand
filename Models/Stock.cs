@@ -55,18 +55,18 @@ namespace StocksStand.Models
 				{
 					List<string> quotes = line.Split(',').ToList();
 
-					//Если в котировках акции уже есть котировка с такой датой, то добавлять такую же котировку не нужно
-					if (this.Quotes.FirstOrDefault(q => q.Date == DateTime.Parse(quotes.ElementAtOrDefault(0))) == null)
+					//Добавляем котировку, только если у акции нет котировки с такой датой
+					if (this.Quotes.FirstOrDefault(q => (q.Date == Convert.ToDateTime(quotes.ElementAtOrDefault(0), CultureInfo.InvariantCulture))) == null)
 					{
 						this.Quotes.Add(new Quote
 						{
 							FinancialInstrument = this,
-							Date = Convert.ToDateTime(quotes.ElementAtOrDefault(0)),
+							Date = Convert.ToDateTime(quotes.ElementAtOrDefault(0), CultureInfo.InvariantCulture),
 							OpenPrice = Convert.ToDouble(quotes.ElementAtOrDefault(1), CultureInfo.InvariantCulture),
 							HighPrice = Convert.ToDouble(quotes.ElementAtOrDefault(2), CultureInfo.InvariantCulture),
 							LowPrice = Convert.ToDouble(quotes.ElementAtOrDefault(3), CultureInfo.InvariantCulture),
 							ClosePrice = Convert.ToDouble(quotes.ElementAtOrDefault(4), CultureInfo.InvariantCulture),
-							Volume = Convert.ToDouble(quotes.ElementAtOrDefault(5))
+							Volume = Convert.ToDouble(quotes.ElementAtOrDefault(5), CultureInfo.InvariantCulture)
 						});
 						quotesCounter++;
 					}
